@@ -1,19 +1,32 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ★追加
+import { useNavigate, useLocation } from "react-router-dom";
 
 function SendMoney() {
+  const navigate = useNavigate();
+  const { state } = useLocation();
+
+  // ★ 受け取ったユーザー（全データ）。なければデフォルト
+  const user = state?.user ?? {
+    id: 0,
+    name: "サンプル 氏名",
+    icon: "/images/human1.png",
+    email: "",
+    limit: 50000,
+  };
+
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();               // ★追加
 
-  const isAmountValid = amount !== "" && Number(amount) >= 1 && Number(amount) <= 50000;
+  const isAmountValid =
+    amount !== "" && Number(amount) >= 1 && Number(amount) <= (user.limit ?? 50000);
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
     if (value === "") return setAmount("");
     const num = Number(value);
+    const max = user.limit ?? 50000;
     if (num < 1) return setAmount("1");
-    if (num > 50000) return setAmount("50000");
+    if (num > max) return setAmount(String(max));
     setAmount(value);
   };
 
@@ -25,19 +38,24 @@ function SendMoney() {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
             <img
-              src="/images/human1.png"   // public配下なら /images/... とすると安全
-              alt="profile"
+              src={user.icon}
+              alt={user.name}
               className="w-12 h-12 object-cover rounded-full"
             />
           </div>
-          <div className="text-[15px] md:text-base font-medium tracking-wide">サンプル 氏名</div>
+          {/* ★ 選択した相手の名前を表示 */}
+          <div className="text-[15px] md:text-base font-medium tracking-wide">
+            {user.name}
+          </div>
         </div>
       </div>
 
-      {/* 送金上限額 */}
+      {/* 送金上限額（ユーザーごとに可変にしたい場合は user.limit を使用） */}
       <div className="flex items-start gap-4 mt-6">
         <div className="text-sm text-gray-600 leading-6 mt-1">送金上限額</div>
-        <div className="text-[15px] md:text-base font-semibold tracking-wide">50,000円</div>
+        <div className="text-[15px] md:text-base font-semibold tracking-wide">
+          {(user.limit ?? 50000).toLocaleString()}円
+        </div>
       </div>
 
       {/* 送金金額 */}
@@ -48,7 +66,7 @@ function SendMoney() {
             type="number"
             inputMode="numeric"
             min="1"
-            max="50000"
+            max={user.limit ?? 50000}
             step="1"
             placeholder="金額"
             value={amount}
@@ -80,10 +98,10 @@ function SendMoney() {
         送金
       </button>
 
-      {/* 請求ボタン → /request へ */}
+      {/* 請求ボタン → /request へ（必要なら user も渡せます） */}
       <button
         type="button"
-        onClick={() => navigate("/request")}
+        onClick={() => navigate("/request", { state: { user } })}
         className="mt-3 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner bg-blue-500 hover:bg-blue-600 transition-colors"
       >
         請求
