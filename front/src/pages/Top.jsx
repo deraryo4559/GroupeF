@@ -10,7 +10,10 @@ const Top = () => {
                     <h2 className="text-xl font-bold text-center text-gray-800 mb-6">
                         お客様情報
                     </h2>
-                    <Icon />
+                    <Icon
+                        img="\images\human1.png"
+                        name="サンプル氏名"
+                    />
                     <div>
                         {/* 口座番号表示 */}
                         <div className="mb-4">
