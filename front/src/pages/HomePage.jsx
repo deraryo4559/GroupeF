@@ -1,4 +1,5 @@
 import React from 'react';
+import Button1 from '../components/button1'
 
 const HomePage = () => {
     return (
@@ -29,6 +30,11 @@ const HomePage = () => {
                             </p>
                         </div>
                     </div>
+                </div>
+                <div className="mt-6 flex justify-center">
+                    <Button1 navigateTo="/page2" className="w-full">
+                        送金する
+                    </Button1>
                 </div>
             </div>
         </div>
