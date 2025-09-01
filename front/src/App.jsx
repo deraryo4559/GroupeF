@@ -6,6 +6,7 @@ import SendMoney from './components/SendMoney';
 
 
 
+
 function App() {
   return (
     <Router>
@@ -13,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/step3" element={<Step3 />} />
-          <Route path="/SendMoney" element={<SendMoney />} />        
+          <Route path="/SendMoney" element={<SendMoney />} />
         </Routes>
       </div>
     </Router>
