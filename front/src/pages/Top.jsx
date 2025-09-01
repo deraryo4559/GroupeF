@@ -1,5 +1,5 @@
 import React from 'react';
-import Button1 from '../components/button1'
+import Button1 from '../components/Button1'
 
 const Top = () => {
     return (
