@@ -1,19 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import Step3 from './pages/step3';
-import SendMoney from './components/SendMoney';
-
-
-
+import Top from './pages/Top';
+import AddressList from './pages/AddressList';
+import SendMoney from './pages/SendMoney';
 
 function App() {
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/step3" element={<Step3 />} />
+          <Route path="/" element={<Top />} />
+          <Route path="/step3" element={<AddressList />} />
           <Route path="/SendMoney" element={<SendMoney />} />
         </Routes>
       </div>

@@ -9,7 +9,7 @@ const users = [
   { id: 4, name: '高橋 三郎', icon: '../../public/images/human3.png' }
 ];
 
-function Step3() {
+function AddressList() {
   const navigate = useNavigate(); // ← 追加
 
   return (
@@ -39,4 +39,4 @@ function Step3() {
   );
 }
 
-export default Step3;
+export default AddressList;
