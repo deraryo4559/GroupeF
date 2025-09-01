@@ -1,13 +1,17 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom'; // ← 追加
 
 // 仮のユーザーデータ
 const users = [
-  { id: 1, name: '田中 太郎' , icon: '../../public/images/human3.png'},
-  { id: 2, name: '鈴木 花子' , icon: '../../public/images/human3.png'},
-  { id: 3, name: '佐藤 次郎' , icon: '../../public/images/human3.png'},
-  { id: 4, name: '高橋 三郎' , icon: '../../public/images/human3.png'}
+  { id: 1, name: '田中 太郎', icon: '../../public/images/human3.png' },
+  { id: 2, name: '鈴木 花子', icon: '../../public/images/human3.png' },
+  { id: 3, name: '佐藤 次郎', icon: '../../public/images/human3.png' },
+  { id: 4, name: '高橋 三郎', icon: '../../public/images/human3.png' }
 ];
 
 function Step3() {
+  const navigate = useNavigate(); // ← 追加
+
   return (
     <div className="p-6 font-sans">
       {/* タイトル */}
@@ -19,10 +23,9 @@ function Step3() {
           <li
             key={user.id}
             className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => alert(`${user.name} を選択しました`)}
+            onClick={() => navigate('/SendMoney')} // ← alert を遷移に置き換え
           >
-
-                        {/* アイコン */}
+            {/* アイコン */}
             <img
               src={user.icon}
               alt={user.name}
