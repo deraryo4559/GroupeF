@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 
-function Button1({ children, className = "", navigateTo = "/page2" }) {
+function Button1({ children, className = "", navigateTo = "/Step3" }) {
   const navigate = useNavigate()
 
   const handleClick = () => {

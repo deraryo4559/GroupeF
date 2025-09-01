@@ -1,8 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import Step3 from './pages/step3';
 import SendMoney from './components/SendMoney';
-import Page2 from './pages/page2';
+
 
 
 
@@ -12,8 +13,8 @@ function App() {
       <div>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/step3" element={<Step3 />} />
           <Route path="/SendMoney" element={<SendMoney />} />
-          <Route path="/page2" element={<Page2 />} />
         </Routes>
       </div>
     </Router>

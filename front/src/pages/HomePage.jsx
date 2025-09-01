@@ -32,7 +32,7 @@ const HomePage = () => {
                     </div>
                 </div>
                 <div className="mt-6 flex justify-center">
-                    <Button1 navigateTo="/page2" className="w-full">
+                    <Button1 navigateTo="/step3" className="w-full">
                         送金する
                     </Button1>
                 </div>
