@@ -15,7 +15,15 @@ function RequestLink() {
     setReqAmount(v);
   };
 
-  const canCreate = reqAmount !== "" && Number(reqAmount) >= 1 && Number(reqAmount) <= 50000;
+  const canCreate =
+    reqAmount !== "" && Number(reqAmount) >= 1 && Number(reqAmount) <= 50000;
+
+  // ★ 生成した請求リンク（ダミー）を持って完了画面へ遷移
+  const handleCreate = () => {
+    const id = Math.random().toString(36).slice(2, 10);
+    const link = `${window.location.origin}/pay/${id}`; // ダミーの請求リンク
+    navigate("/request/complete", { state: { link, amount: reqAmount, msg: reqMsg } });
+  };
 
   return (
     <div className="w-full max-w-xs md:max-w-md lg:max-w-lg mx-auto p-6 bg-white rounded-xl shadow text-gray-800">
@@ -55,9 +63,9 @@ function RequestLink() {
       <button
         type="button"
         disabled={!canCreate}
-        className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
+        onClick={handleCreate}  // ★ここを変更
+        className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors
           ${canCreate ? "bg-red-500 hover:bg-red-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`}
-        onClick={() => alert("請求リンクを作成しました！（ダミー）")}
       >
         リンクを作成
       </button>
