@@ -1,7 +1,7 @@
 import React from 'react';
 import Button1 from '../components/button1'
 
-const HomePage = () => {
+const Top = () => {
     return (
         <div className="bg-gray-100 flex justify-center min-h-screen p-4 font-sans">
             <div className="max-w-sm w-full bg-white rounded-xl shadow-lg p-6 flex flex-col justify-center">
@@ -41,4 +41,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default Top;
