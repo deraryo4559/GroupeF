@@ -104,7 +104,7 @@ function SendMoney() {
       {/* 送金ボタン */}
 
      <div className="mt-6 flex justify-center">
-       <Button1 className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
+       <Button1 navigateTo="/SendMoneyComplete" className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
           ${isAmountValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`} variant='primary' disabled={!isAmountValid} >
         送金
        </Button1>
