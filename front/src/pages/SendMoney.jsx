@@ -31,6 +31,18 @@ function SendMoney() {
     setAmount(value);
   };
 
+  // 送金ボタンがクリックされたときの処理
+  const handleSendMoney = () => {
+    if (isAmountValid) {
+      navigate("/SendMoneyComplete", { state: { user, amount, message } });
+    }
+  };
+
+  // 請求ボタンがクリックされたときの処理
+  const handleRequestMoney = () => {
+    navigate("/request", { state: { user } });
+  };
+
   return (
     <div className="w-full max-w-xs md:max-w-md lg:max-w-lg mx-auto p-6 bg-white rounded-xl shadow text-gray-800">
       {/* 戻るボタン */}
@@ -103,12 +115,12 @@ function SendMoney() {
 
       {/* 送金ボタン */}
 
-     <div className="mt-6 flex justify-center">
-       <Button1 className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
+      <div className="mt-6 flex justify-center">
+        <Button1 navigateTo="/SendMoneyComplete" className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
           ${isAmountValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`} variant='primary' disabled={!isAmountValid} >
-        送金
-       </Button1>
-    </div>
+          送金
+        </Button1>
+      </div>
 
     </div>
   );
