@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button1 from '../components/button1';
-
+import Balance from '../components/Balance';
 function SendMoney() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -122,20 +122,12 @@ function SendMoney() {
         </div>
       </div>
 
-      {/* 送金上限額と現在の残高 */}
-      <div className="flex items-start gap-4 mt-6">
-        <div className="text-sm text-gray-600 leading-6 mt-1">送金上限額</div>
-        <div className="text-[15px] md:text-base font-semibold tracking-wide">
-          {balance.toLocaleString()}円
-        </div>
-      </div>
+           {/* 送金上限額 */}
+      <Balance balance={balance} label="送金上限額" />
 
-      <div className="flex items-start gap-4 mt-4">
-        <div className="text-sm text-gray-600 leading-6 mt-1">現在の残高</div>
-        <div className="text-[15px] md:text-base font-semibold tracking-wide text-green-600">
-          {balance.toLocaleString()}円
-        </div>
-      </div>
+      {/* 現在の残高 */}
+      <Balance balance={balance} label="現在の残高" highlight />
+
 
       {/* 送金金額 */}
       <div className="mt-6">
