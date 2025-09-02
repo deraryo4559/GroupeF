@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon';
+import Button1 from '../components/button1';
 
 // 公開フォルダに置いた想定（/public/images/...）
 const users = [
@@ -19,7 +20,17 @@ function AddressList() {
 
   return (
     <div className="p-6 font-sans">
-      <h1 className="text-3xl font-bold mb-6 text-blue-600">送金相手を選択</h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-4 text-blue-600">送金相手を選択</h1>
+        <Button1 
+          variant="outline" 
+          size="small" 
+          navigateTo="/"
+          className="mb-4"
+        >
+          ← Top画面に戻る
+        </Button1>
+      </div>
       <ul className="space-y-3">
         {users.map((user) => (
           <li
