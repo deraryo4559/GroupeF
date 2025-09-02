@@ -31,6 +31,11 @@ const Top = () => {
                             送金する
                         </Button1>
                     </div>
+                    <div className="mt-6 flex justify-center">
+                        <Button1 navigateTo="/request" className="w-full" variant='danger'>
+                            請求する
+                        </Button1>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Button1 from "../components/button1"; // Button1コンポーネントをインポート
+import Button1 from '../components/button1';
 
 function SendMoney() {
   const navigate = useNavigate();
@@ -102,22 +102,14 @@ function SendMoney() {
       </div>
 
       {/* 送金ボタン */}
-      <Button1
-        onClick={handleSendMoney}
-        disabled={!isAmountValid}
-        variant="danger"
-        className="mt-6 w-full"
-      >
-        送金
-      </Button1>
 
-      {/* 請求ボタン */}
-      <Button1
-        onClick={handleRequestMoney}
-        className="mt-3 w-full"
-      >
-        請求
-      </Button1>
+     <div className="mt-6 flex justify-center">
+       <Button1 className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
+          ${isAmountValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`} variant='primary' disabled={!isAmountValid} >
+        送金
+       </Button1>
+    </div>
+
     </div>
   );
 }
