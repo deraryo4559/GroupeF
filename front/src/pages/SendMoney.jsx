@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button1 from '../components/button1';
 
@@ -6,29 +6,83 @@ function SendMoney() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  // ★ 受け取ったユーザー（全データ）。なければデフォルト
+  // 残高の状態管理
+  const [balance, setBalance] = useState(50000);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // ローカルストレージから残高を読み込み
+  useEffect(() => {
+    const savedBalance = localStorage.getItem('userBalance');
+    if (savedBalance) {
+      setBalance(Number(savedBalance));
+    }
+  }, []);
+
+  // ★ 受け取ったユーザー（全データ）。なければデフォルト（limitを残高と同じに設定）
   const user = state?.user ?? {
     id: 0,
     name: "サンプル 氏名",
     icon: "/images/human1.png",
     email: "",
-    limit: 50000,
+    limit: balance, // limitを残高と同じに設定
+  };
+
+  // userのlimitも残高と同期
+  const syncedUser = {
+    ...user,
+    limit: balance
   };
 
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
 
   const isAmountValid =
-    amount !== "" && Number(amount) >= 1 && Number(amount) <= (user.limit ?? 50000);
+    amount !== "" && 
+    Number(amount) >= 1 && 
+    Number(amount) <= balance; // 残高以下であることをチェック
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
     if (value === "") return setAmount("");
     const num = Number(value);
-    const max = user.limit ?? 50000;
+    const max = balance; // 最大値を残高に設定
     if (num < 1) return setAmount("1");
     if (num > max) return setAmount(String(max));
     setAmount(value);
+  };
+
+  // 送金処理
+  const handleSendMoney = async () => {
+    if (!isAmountValid || isProcessing) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      // 送金処理のシミュレーション
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const sendAmount = Number(amount);
+      const newBalance = balance - sendAmount;
+      
+      // 残高をローカルストレージに保存
+      localStorage.setItem('userBalance', newBalance.toString());
+      setBalance(newBalance);
+      
+      // 成功メッセージ
+      alert(`${syncedUser.name}に${sendAmount.toLocaleString()}円を送金しました。\n残高: ${newBalance.toLocaleString()}円`);
+      
+      // フォームをリセット
+      setAmount("");
+      setMessage("");
+      
+      // Top画面に戻る
+      navigate("/");
+      
+    } catch (error) {
+      alert("送金に失敗しました。もう一度お試しください。");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -63,11 +117,18 @@ function SendMoney() {
         </div>
       </div>
 
-      {/* 送金上限額（ユーザーごとに可変にしたい場合は user.limit を使用） */}
+      {/* 送金上限額と現在の残高 */}
       <div className="flex items-start gap-4 mt-6">
         <div className="text-sm text-gray-600 leading-6 mt-1">送金上限額</div>
         <div className="text-[15px] md:text-base font-semibold tracking-wide">
-          {(user.limit ?? 50000).toLocaleString()}円
+          {balance.toLocaleString()}円
+        </div>
+      </div>
+
+      <div className="flex items-start gap-4 mt-4">
+        <div className="text-sm text-gray-600 leading-6 mt-1">現在の残高</div>
+        <div className="text-[15px] md:text-base font-semibold tracking-wide text-green-600">
+          {balance.toLocaleString()}円
         </div>
       </div>
 
@@ -79,7 +140,7 @@ function SendMoney() {
             type="number"
             inputMode="numeric"
             min="1"
-            max={user.limit ?? 50000}
+            max={balance}
             step="1"
             placeholder="金額"
             value={amount}
@@ -102,11 +163,15 @@ function SendMoney() {
       </div>
 
       {/* 送金ボタン */}
-
      <div className="mt-6 flex justify-center">
-       <Button1 className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
-          ${isAmountValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`} variant='primary' disabled={!isAmountValid} >
-        送金
+       <Button1 
+         className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
+            ${isAmountValid && !isProcessing ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`} 
+         variant='primary' 
+         disabled={!isAmountValid || isProcessing}
+         onClick={handleSendMoney}
+       >
+         {isProcessing ? "送金中..." : "送金"}
        </Button1>
     </div>
 
