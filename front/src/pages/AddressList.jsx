@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Icon from '../components/Icon';
 
 // 公開フォルダに置いた想定（/public/images/...）
 const users = [
@@ -13,7 +14,6 @@ function AddressList() {
   const navigate = useNavigate();
 
   const handleSelect = (user) => {
-    // ★ ユーザー全データを state で渡す
     navigate('/SendMoney', { state: { user } });
   };
 
@@ -24,11 +24,11 @@ function AddressList() {
         {users.map((user) => (
           <li
             key={user.id}
-            className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+            className="p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
             onClick={() => handleSelect(user)}
           >
-            <img src={user.icon} alt={user.name} className="w-10 h-10 rounded-full mr-4" />
-            {user.name}
+            {/*Icon コンポーネント*/}
+            <Icon img={user.icon} name={user.name} />
           </li>
         ))}
       </ul>
