@@ -94,15 +94,15 @@ function SendMoney() {
 
   return (
     <>
-      <Header title="送金" backTo="/step3" />
-      <div className="w-full pt-8 max-w-xs md:max-w-md lg:max-w-lg mx-auto p-6 bg-white rounded-xl shadow text-gray-800">
+      <Header title="送金" />
+      <div className="w-full max-w-xs md:max-w-md lg:max-w-lg mx-auto p-6 bg-white rounded-xl shadow text-gray-800">
         {/* 送金先 */}
         <div className="flex items-start gap-4">
           <div className="text-sm text-gray-600 leading-6 mt-1">送金先</div>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
               <img
-                src={user.icon}
+                src={user.avatar_path}
                 alt={user.name}
                 className="w-12 h-12 object-cover rounded-full"
               />
@@ -114,11 +114,11 @@ function SendMoney() {
           </div>
         </div>
 
-           {/* 送金上限額 */}
-      <Balance balance={balance} label="送金上限額" />
+        {/* 送金上限額 */}
+        <Balance balance={balance} label="送金上限額" />
 
-      {/* 現在の残高 */}
-      <Balance balance={balance} label="現在の残高" highlight />
+        {/* 現在の残高 */}
+        <Balance balance={balance} label="現在の残高" highlight />
 
 
         {/* 送金金額 */}

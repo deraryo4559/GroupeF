@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button1 from '../components/button1';
 import Icon from '../components/Icon';
 import Header from '../components/Header';
-import Balance from '../components/Balance'; // ← 追加
+import Balance from '../components/Balance'; 
 
 const Top = () => {
     const [balance, setBalance] = useState(50000); // 初期残高50,000円
