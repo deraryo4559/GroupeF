@@ -8,6 +8,8 @@ import Top from './pages/Top';
 import AddressList from './pages/AddressList';
 import BillingStatus from './pages/BillingStatus';
 
+import Payment from './pages/Payment';
+import PaymentComplete from './pages/PaymentComplete';
 function App() {
   return (
     <Router>
@@ -20,6 +22,8 @@ function App() {
           <Route path="/request/complete" element={<RequestComplete />} />
           <Route path="/SendMoneyComplete" element={<SendMoneyComplete />} />
           <Route path="/billing-status" element={<BillingStatus />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/payment/complete" element={<PaymentComplete />} />
         </Routes>
       </div>
     </Router>
