@@ -36,6 +36,11 @@ const Top = () => {
                             請求する
                         </Button1>
                     </div>
+                    <div className="mt-6 flex justify-center">
+                        <Button1 navigateTo="/billing-status" className="w-full" variant='secondary'>
+                            請求ステータス
+                        </Button1>
+                    </div>
                 </div>
             </div>
         </div>
