@@ -72,10 +72,10 @@ function RequestLink() {
 
       <button
         type="button"
-        onClick={() => navigate("/SendMoney")}
+        onClick={() => navigate("/")}
         className="mt-3 w-full py-3.5 rounded-xl text-[15px] md:text-base font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
       >
-        ← 戻る
+        ← Topに戻る
       </button>
     </div>
   );
