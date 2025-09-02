@@ -13,4 +13,7 @@ def create_app():
     from .routes.users import users_bp
     app.register_blueprint(users_bp, url_prefix='/api/users')
 
+    from .routes.accounts import accounts_bp
+    app.register_blueprint(accounts_bp, url_prefix='/api/accounts')
+
     return app

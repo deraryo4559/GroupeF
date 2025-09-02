@@ -17,3 +17,11 @@ def get_user_list():
     users = user_model.get_all_users(exclude_user_id=exclude_id)
     
     return jsonify(users)
+
+@users_bp.route('/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    # user_modelにIDで一件だけ取得する関数を新しく作るのが理想
+    user = user_model.get_user_by_id(user_id) 
+    if user:
+        return jsonify(user)
+    return jsonify({"error": "user not found"}), 404
