@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SendMoney from './pages/SendMoney';
 import RequestLink from './components/RequestLink';
 import RequestComplete from './components/RequestComplete';
-
+import SendMoneyComplete from './pages/SendMoneyComplete';
 import Top from './pages/Top';
 import AddressList from './pages/AddressList';
 
@@ -17,6 +17,7 @@ function App() {
           <Route path="/SendMoney" element={<SendMoney />} />
           <Route path="/request" element={<RequestLink />} />
           <Route path="/request/complete" element={<RequestComplete />} />
+          <Route path="/SendMoneyComplete" element={<SendMoneyComplete />} />
         </Routes>
       </div>
     </Router>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Button1 from "../components/button1"; // Button1コンポーネントをインポート
 
 function SendMoney() {
   const navigate = useNavigate();
@@ -28,6 +29,18 @@ function SendMoney() {
     if (num < 1) return setAmount("1");
     if (num > max) return setAmount(String(max));
     setAmount(value);
+  };
+
+  // 送金ボタンがクリックされたときの処理
+  const handleSendMoney = () => {
+    if (isAmountValid) {
+      navigate("/SendMoneyComplete", { state: { user, amount, message } });
+    }
+  };
+
+  // 請求ボタンがクリックされたときの処理
+  const handleRequestMoney = () => {
+    navigate("/request", { state: { user } });
   };
 
   return (
@@ -89,23 +102,22 @@ function SendMoney() {
       </div>
 
       {/* 送金ボタン */}
-      <button
-        type="button"
+      <Button1
+        onClick={handleSendMoney}
         disabled={!isAmountValid}
-        className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
-          ${isAmountValid ? "bg-red-500 hover:bg-red-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`}
+        variant="danger"
+        className="mt-6 w-full"
       >
         送金
-      </button>
+      </Button1>
 
-      {/* 請求ボタン → /request へ（必要なら user も渡せます） */}
-      <button
-        type="button"
-        onClick={() => navigate("/request", { state: { user } })}
-        className="mt-3 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner bg-blue-500 hover:bg-blue-600 transition-colors"
+      {/* 請求ボタン */}
+      <Button1
+        onClick={handleRequestMoney}
+        className="mt-3 w-full"
       >
         請求
-      </button>
+      </Button1>
     </div>
   );
 }
