@@ -1,18 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-<<<<<<< HEAD
-import HomePage from './pages/HomePage';
-import Step3 from './pages/step3';
-import SendMoney from './components/SendMoney';
+import SendMoney from './pages/SendMoney';
 import RequestLink from './components/RequestLink';
 import RequestComplete from './components/RequestComplete';
 
-
-=======
 import Top from './pages/Top';
 import AddressList from './pages/AddressList';
-import SendMoney from './pages/SendMoney';
->>>>>>> 5f0619552e1f640ff4847c9e74f981bd51f39498
 
 function App() {
   return (
