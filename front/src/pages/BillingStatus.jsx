@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button1 from '../components/button1';
+import BillingInfo from '../components/BillingInfo';
+import PayerInfo from '../components/PayerInfo';
 
 const BillingStatus = () => {
     const navigate = useNavigate();
@@ -61,6 +63,7 @@ const BillingStatus = () => {
         }).format(date);
     };
 
+    // ステータスに応じたスタイル
     const getStatusStyles = (status) => {
         if (status === 'paid') {
             return {
@@ -96,40 +99,18 @@ const BillingStatus = () => {
                                     <li key={billing.id} className="p-4">
                                         <div className="flex justify-between items-start">
                                             {/* 請求情報 */}
-                                            <div className="flex-1">
-                                                <div className="flex items-center">
-                                                    <span className="font-semibold text-lg text-gray-900">
-                                                        {billing.amount.toLocaleString()}円
-                                                    </span>
-                                                    <span className={`ml-3 text-xs px-2 py-1 rounded-full ${statusStyle.bgColor} ${statusStyle.textColor}`}>
-                                                        {statusStyle.label}
-                                                    </span>
-                                                </div>
-                                                {billing.message && (
-                                                    <p className="text-gray-600 text-sm mt-1">
-                                                        {billing.message}
-                                                    </p>
-                                                )}
-                                                <p className="text-gray-500 text-xs mt-1">
-                                                    {formatDate(billing.createdAt)}
-                                                </p>
-                                            </div>
+                                            <BillingInfo
+                                                billing={billing}
+                                                formatDate={formatDate}
+                                                statusStyle={statusStyle}
+                                            />
 
                                             {/* 支払いユーザー情報（支払い済みのときだけ） */}
-                                            {billing.status === 'paid' && billing.paidBy && (
-                                                <div className="flex items-center ml-4">
-                                                    <div className="flex flex-col items-end">
-                                                        <span className="text-xs text-gray-500 mb-1">支払者</span>
-                                                        <div className="flex items-center">
-                                                            <span className="text-sm text-gray-700 mr-2">{billing.paidBy.name}</span>
-                                                            <img
-                                                                src={billing.paidBy.icon}
-                                                                alt={billing.paidBy.name}
-                                                                className="w-8 h-8 rounded-full object-cover"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            {billing.status === 'paid' && (
+                                                <PayerInfo
+                                                    payer={billing.paidBy}
+                                                    className="ml-4"
+                                                />
                                             )}
                                         </div>
                                     </li>
