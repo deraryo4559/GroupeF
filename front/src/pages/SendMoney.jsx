@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Button1 from '../components/button1';
 
 function SendMoney() {
   const navigate = useNavigate();
@@ -89,23 +90,14 @@ function SendMoney() {
       </div>
 
       {/* 送金ボタン */}
-      <button
-        type="button"
-        disabled={!isAmountValid}
-        className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
-          ${isAmountValid ? "bg-red-500 hover:bg-red-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`}
-      >
-        送金
-      </button>
 
-      {/* 請求ボタン → /request へ（必要なら user も渡せます） */}
-      <button
-        type="button"
-        onClick={() => navigate("/request", { state: { user } })}
-        className="mt-3 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner bg-blue-500 hover:bg-blue-600 transition-colors"
-      >
-        請求
-      </button>
+     <div className="mt-6 flex justify-center">
+       <Button1 className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors 
+          ${isAmountValid ? "bg-blue-500 hover:bg-blue-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`} variant='primary' disabled={!isAmountValid} >
+        送金
+       </Button1>
+    </div>
+
     </div>
   );
 }
