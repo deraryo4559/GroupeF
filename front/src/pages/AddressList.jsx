@@ -9,6 +9,7 @@ const users = [
   { id: 4, name: '高橋 三郎', icon: '/images/human4.png', email: 'saburo@example.com', limit: 50000 },
 ];
 
+<<<<<<< HEAD:front/src/pages/Step3.jsx
 function Step3() {
   const navigate = useNavigate();
 
@@ -16,6 +17,10 @@ function Step3() {
     // ★ ユーザー全データを state で渡す
     navigate('/SendMoney', { state: { user } });
   };
+=======
+function AddressList() {
+  const navigate = useNavigate(); // ← 追加
+>>>>>>> 5f0619552e1f640ff4847c9e74f981bd51f39498:front/src/pages/AddressList.jsx
 
   return (
     <div className="p-6 font-sans">
@@ -36,4 +41,4 @@ function Step3() {
   );
 }
 
-export default Step3;
+export default AddressList;
