@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button1 from '../components/button1';
-
+import Balance from '../components/Balance';
 function SendMoney() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -45,9 +45,8 @@ function SendMoney() {
     const value = e.target.value;
     if (value === "") return setAmount("");
     const num = Number(value);
-    const max = balance; // 最大値を残高に設定
     if (num < 1) return setAmount("1");
-    if (num > max) return setAmount(String(max));
+    // 残高を超える金額でも入力を許可（警告表示のため）
     setAmount(value);
   };
 
@@ -123,20 +122,12 @@ function SendMoney() {
         </div>
       </div>
 
-      {/* 送金上限額と現在の残高 */}
-      <div className="flex items-start gap-4 mt-6">
-        <div className="text-sm text-gray-600 leading-6 mt-1">送金上限額</div>
-        <div className="text-[15px] md:text-base font-semibold tracking-wide">
-          {balance.toLocaleString()}円
-        </div>
-      </div>
+           {/* 送金上限額 */}
+      <Balance balance={balance} label="送金上限額" />
 
-      <div className="flex items-start gap-4 mt-4">
-        <div className="text-sm text-gray-600 leading-6 mt-1">現在の残高</div>
-        <div className="text-[15px] md:text-base font-semibold tracking-wide text-green-600">
-          {balance.toLocaleString()}円
-        </div>
-      </div>
+      {/* 現在の残高 */}
+      <Balance balance={balance} label="現在の残高" highlight />
+
 
       {/* 送金金額 */}
       <div className="mt-6">
@@ -155,6 +146,15 @@ function SendMoney() {
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm md:text-base">円</span>
         </div>
+        
+        {/* 残高不足の警告文 */}
+        {amount !== "" && Number(amount) > balance && (
+          <div className="mt-2 p-3 bg-red-100 border border-red-300 rounded-lg">
+            <p className="text-sm text-red-600">
+              残高が足りません。現在の残高: {balance.toLocaleString()}円
+            </p>
+          </div>
+        )}
       </div>
 
       {/* メッセージ（任意） */}
