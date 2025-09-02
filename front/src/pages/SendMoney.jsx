@@ -1,27 +1,33 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function SendMoney() {
-  const [amount, setAmount] = useState("");     // 空 → プレースホルダー「金額」が表示
-  const [message, setMessage] = useState("");   // メッセージ欄
+  const navigate = useNavigate();
+  const { state } = useLocation();
 
-  // 金額入力済みか判定（1以上 50000以下）
-  const isAmountValid = amount !== "" && Number(amount) >= 1 && Number(amount) <= 50000;
+  // ★ 受け取ったユーザー（全データ）。なければデフォルト
+  const user = state?.user ?? {
+    id: 0,
+    name: "サンプル 氏名",
+    icon: "/images/human1.png",
+    email: "",
+    limit: 50000,
+  };
 
-  // 入力時に範囲チェック
+  const [amount, setAmount] = useState("");
+  const [message, setMessage] = useState("");
+
+  const isAmountValid =
+    amount !== "" && Number(amount) >= 1 && Number(amount) <= (user.limit ?? 50000);
+
   const handleAmountChange = (e) => {
     const value = e.target.value;
-    if (value === "") {
-      setAmount("");
-    } else {
-      const num = Number(value);
-      if (num < 1) {
-        setAmount("1");
-      } else if (num > 50000) {
-        setAmount("50000");
-      } else {
-        setAmount(value);
-      }
-    }
+    if (value === "") return setAmount("");
+    const num = Number(value);
+    const max = user.limit ?? 50000;
+    if (num < 1) return setAmount("1");
+    if (num > max) return setAmount(String(max));
+    setAmount(value);
   };
 
   return (
@@ -32,22 +38,23 @@ function SendMoney() {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
             <img
-              src="../public/images/human1.png"
-              alt="profile"
+              src={user.icon}
+              alt={user.name}
               className="w-12 h-12 object-cover rounded-full"
             />
           </div>
+          {/* ★ 選択した相手の名前を表示 */}
           <div className="text-[15px] md:text-base font-medium tracking-wide">
-            サンプル 氏名
+            {user.name}
           </div>
         </div>
       </div>
 
-      {/* 送金上限額 */}
+      {/* 送金上限額（ユーザーごとに可変にしたい場合は user.limit を使用） */}
       <div className="flex items-start gap-4 mt-6">
         <div className="text-sm text-gray-600 leading-6 mt-1">送金上限額</div>
         <div className="text-[15px] md:text-base font-semibold tracking-wide">
-          50,000円
+          {(user.limit ?? 50000).toLocaleString()}円
         </div>
       </div>
 
@@ -59,16 +66,14 @@ function SendMoney() {
             type="number"
             inputMode="numeric"
             min="1"
-            max="50000"
+            max={user.limit ?? 50000}
             step="1"
             placeholder="金額"
             value={amount}
             onChange={handleAmountChange}
             className="w-full pr-10 pl-4 py-3 text-[15px] md:text-base rounded-xl border border-gray-300 bg-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm md:text-base">
-            円
-          </span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm md:text-base">円</span>
         </div>
       </div>
 
@@ -92,9 +97,11 @@ function SendMoney() {
       >
         送金
       </button>
-      {/* 請求ボタン */}
+
+      {/* 請求ボタン → /request へ（必要なら user も渡せます） */}
       <button
         type="button"
+        onClick={() => navigate("/request", { state: { user } })}
         className="mt-3 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner bg-blue-500 hover:bg-blue-600 transition-colors"
       >
         請求

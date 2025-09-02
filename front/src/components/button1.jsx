@@ -8,7 +8,7 @@ function Button1({ children, className = "", navigateTo = "/Step3" }) {
   }
 
   return (
-    <button 
+    <button
       onClick={handleClick}
       className={`px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium ${className}`}
     >
