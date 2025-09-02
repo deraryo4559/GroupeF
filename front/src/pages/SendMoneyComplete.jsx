@@ -25,7 +25,7 @@ const SendMoneyComplete = () => {
                     送金処理が正常に完了しました
                 </p>
 
-                {/* ホームに戻るボタン */}
+                {/* ホームに戻る */}
                 <Button1 navigateTo="/" className="w-full">
                     ホームに戻る
                 </Button1>
