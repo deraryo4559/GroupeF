@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button1 from '../components/button1';
 import Icon from '../components/Icon';
+import Balance from '../components/Balance'; // ← 追加
 
 const Top = () => {
     const [balance, setBalance] = useState(50000); // 初期残高50,000円
@@ -11,10 +12,10 @@ const Top = () => {
         if (savedBalance) {
             setBalance(Number(savedBalance));
         } else {
-            // 初回は50,000円を設定
             localStorage.setItem('userBalance', '50000');
         }
     }, []);
+
     return (
         <div className="flex justify-center">
             <div className="max-w-sm w-full p-6 flex flex-col justify-center">
@@ -32,11 +33,8 @@ const Top = () => {
                             <p className="text-sm text-gray-600">口座番号：〇〇〇〇〇〇</p>
                         </div>
 
-                        {/* 預金残高表示 */}
-                        <div>
-                            <p className="text-sm text-gray-600">預金残高</p>
-                            <p className="text-2xl font-bold text-gray-900 flex justify-end">{balance.toLocaleString()}円</p>
-                        </div>
+                        {/* 預金残高（コンポーネント化済み） */}
+                        <Balance balance={balance} />
                     </div>
                     <div className="mt-6 flex justify-center">
                         <Button1 navigateTo="/step3" className="w-full">
