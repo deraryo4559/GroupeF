@@ -26,7 +26,7 @@ try:
             f'test{i}@example.com',
             f'hashed_password_{i}',
             # ランダムな数字を使って画像パスを生成します
-            f'/static/images/human{avatar_num}.png'
+            f'/images/human{avatar_num}.png'
         )
         users_to_insert.append(user)
 
