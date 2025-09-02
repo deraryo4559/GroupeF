@@ -46,9 +46,8 @@ function SendMoney() {
     const value = e.target.value;
     if (value === "") return setAmount("");
     const num = Number(value);
-    const max = balance; // 最大値を残高に設定
     if (num < 1) return setAmount("1");
-    if (num > max) return setAmount(String(max));
+    // 残高を超える金額でも入力を許可（警告表示のため）
     setAmount(value);
   };
 
