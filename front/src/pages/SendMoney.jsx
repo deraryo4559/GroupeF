@@ -110,7 +110,7 @@ function SendMoney() {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
             <img
-              src={user.icon}
+              src={user.avatar_path}
               alt={user.name}
               className="w-12 h-12 object-cover rounded-full"
             />
