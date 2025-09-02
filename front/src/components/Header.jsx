@@ -11,19 +11,29 @@ import { useState, useEffect } from 'react';
  * @param {Function} props.onBackClick - 戻るボタンのカスタムクリックハンドラ
  * @param {React.ReactNode} props.rightAction - ヘッダー右側に表示するアクション要素
  * @param {string} props.className - 追加のカスタムクラス
+ * @param {boolean} props.includeSpacing - ヘッダーの下に自動的にスペースを作るかどうか (デフォルト: true)
+ * @param {React.ReactNode} props.children - ヘッダーの下に表示する子要素 (includeLayout=trueの場合)
+ * @param {boolean} props.includeLayout - ヘッダーの下にレイアウトを提供するかどうか (デフォルト: false)
  * 
  * 使用例:
- * // 基本的な使用方法（戻るボタンあり）
+ * // 基本的な使用方法（戻るボタンあり、下に自動的にスペースが作られる）
  * <Header title="ページタイトル" />
+ * <div>コンテンツ</div>
+ * 
+ * // スペーシングなし（自分でコンテンツ側でスペーシングを設定する場合）
+ * <Header title="ページタイトル" includeSpacing={false} />
+ * <div className="pt-14">手動でスペーシングを設定したコンテンツ</div>
+ * 
+ * // 統合されたレイアウトとして使用（コンポーネントの子要素としてコンテンツを配置）
+ * <Header title="ページタイトル" includeLayout={true}>
+ *   <div>このコンテンツは自動的にヘッダーの下に配置されます</div>
+ * </Header>
  * 
  * // 戻るボタンなしで使用（トップページなど）
  * <Header title="ホーム" showBackButton={false} />
  * 
  * // 特定のURLに戻るボタン
  * <Header title="詳細ページ" backTo="/list" />
- * 
- * // カスタムの戻る処理
- * <Header title="編集" onBackClick={() => confirmLeave()} />
  */
 function Header({
     title,
@@ -32,10 +42,14 @@ function Header({
     onBackClick,
     rightAction,
     className = "",
+    includeSpacing = true,
+    includeLayout = false,
+    children,
 }) {
     const navigate = useNavigate();
     const location = useLocation();
     const [pageTitle, setPageTitle] = useState(title);
+    const headerHeight = "h-14"; // ヘッダーの高さを定義（変更時は1か所だけ）
 
     // タイトルがない場合、現在のパスからタイトルを推測
     useEffect(() => {
@@ -69,9 +83,10 @@ function Header({
         }
     };
 
-    return (
+    // ヘッダー部分
+    const headerElement = (
         <header className={`fixed top-0 left-0 right-0 bg-white shadow-sm z-10 ${className}`}>
-            <div className="flex items-center justify-between h-14 px-4">
+            <div className={`flex items-center justify-between px-4 ${headerHeight}`}>
                 {/* 戻るボタン */}
                 {showBackButton && (
                     <button
@@ -102,10 +117,36 @@ function Header({
 
                 {/* 右側の調整 */}
                 <div className="w-10 flex justify-end">
+                    {rightAction}
                 </div>
             </div>
         </header>
     );
+
+    // レイアウト込みの場合
+    if (includeLayout) {
+        return (
+            <>
+                {headerElement}
+                <div className="pt-16">
+                    {children}
+                </div>
+            </>
+        );
+    }
+
+    // スペーシングを含める場合
+    if (includeSpacing) {
+        return (
+            <>
+                {headerElement}
+                <div className={`${headerHeight} w-full`}></div>
+            </>
+        );
+    }
+
+    // ヘッダーのみ
+    return headerElement;
 }
 
 export default Header;

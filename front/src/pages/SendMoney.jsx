@@ -94,19 +94,7 @@ function SendMoney() {
   return (
     <>
       <Header title="送金" backTo="/step3" />
-      <div className="w-full max-w-xs md:max-w-md lg:max-w-lg mx-auto p-6 bg-white rounded-xl shadow text-gray-800">
-        {/* 戻るボタン */}
-        <div className="mb-4">
-          <Button1
-            variant="outline"
-            size="small"
-            navigateTo="/step3"
-            className="flex items-center gap-1"
-          >
-            ← 送金相手選択に戻る
-          </Button1>
-        </div>
-
+      <div className="w-full pt-8 max-w-xs md:max-w-md lg:max-w-lg mx-auto p-6 bg-white rounded-xl shadow text-gray-800">
         {/* 送金先 */}
         <div className="flex items-start gap-4">
           <div className="text-sm text-gray-600 leading-6 mt-1">送金先</div>

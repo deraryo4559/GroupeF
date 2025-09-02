@@ -22,7 +22,7 @@ const Top = () => {
             <div className="flex justify-center">
                 <div className="max-w-sm w-full p-6 flex flex-col justify-center">
                     <div>
-                        <h2 className="text-xl font-bold text-center text-gray-800 mb-6">
+                        <h2 className="text-xl font-bold text-gray-800 mb-6">
                             お客様情報
                         </h2>
                         <Icon

@@ -83,12 +83,11 @@ const BillingStatus = () => {
 
     return (
         <>
-            <Header title="送金完了" backTo="/" />
+            <Header title="請求ステータス" backTo="/" />
             <div className="bg-white min-h-screen p-4 font-sans">
                 <div className="max-w-md mx-auto">
                     {/* ヘッダー */}
                     <div className="flex justify-between items-center mb-6">
-                        <h1 className="text-2xl font-bold text-gray-800">請求ステータス</h1>
                     </div>
 
                     {/* リスト */}
