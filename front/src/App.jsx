@@ -6,7 +6,8 @@ import RequestComplete from './components/RequestComplete';
 import SendMoneyComplete from './pages/SendMoneyComplete';
 import Top from './pages/Top';
 import AddressList from './pages/AddressList';
-
+import Payment from './pages/Payment';
+import PaymentComplete from './pages/PaymentComplete';
 function App() {
   return (
     <Router>
@@ -18,6 +19,8 @@ function App() {
           <Route path="/request" element={<RequestLink />} />
           <Route path="/request/complete" element={<RequestComplete />} />
           <Route path="/SendMoneyComplete" element={<SendMoneyComplete />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/payment/complete" element={<PaymentComplete />} />
         </Routes>
       </div>
     </Router>
