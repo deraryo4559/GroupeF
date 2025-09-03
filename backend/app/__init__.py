@@ -25,4 +25,7 @@ def create_app():
     print("=== URL MAP ===")
     print(app.url_map)
 
+    from .routes.accounts_all import accounts_bp
+    app.register_blueprint(accounts_bp, url_prefix='/api/accounts_all')
+
     return app

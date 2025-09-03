@@ -37,7 +37,7 @@ const Top = () => {
     });
 
   // --- アカウント情報取得 ---
-  fetch('http://localhost:5000/api/accounts/')  // ← 末尾スラッシュあり
+  fetch('http://localhost:5000/api/accounts_all/')  // ← 末尾スラッシュあり
     .then(response => {
       if (!response.ok) throw new Error('アカウントデータの取得に失敗しました');
       return response.json();

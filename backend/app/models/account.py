@@ -7,22 +7,28 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-def get_all_accounts(exclude_user_id=None):
+def get_account_by_user_id(user_id):
     """
-    指定されたIDを除く、全ユーザーのリストを取得します。
-    送金相手の一覧表示に使用します。
+    指定されたuser_idに対応するアカウント情報を取得します。
     """
+    print(f"[DEBUG] get_account_by_user_id() called with user_id={user_id}")
+
     conn = get_db_connection()
-    
-    query = 'SELECT user_id, account_number, balance FROM accounts'
-    params = []
-    
-    if exclude_user_id:
-        query += ' WHERE user_id != ?'
-        params.append(exclude_user_id)
-        
-    accounts = conn.execute(query, params).fetchall()
+    conn.row_factory = sqlite3.Row   # dict化できるようにする
+
+    query = 'SELECT * FROM accounts WHERE user_id = ?'
+    print(f"[DEBUG] Executing query: {query} with user_id={user_id}")
+
+    account = conn.execute(query, (user_id,)).fetchone()
+    print(f"[DEBUG] Raw fetched result: {account}")
+
     conn.close()
-    
-    # DBの検索結果をPythonの辞書のリストに変換して返す
-    return [dict(account) for account in accounts]
+    print("[DEBUG] Connection closed")
+
+    if account:
+        account_dict = dict(account)
+        print(f"[DEBUG] Converted to dict: {account_dict}")
+        return account_dict
+    else:
+        print("[DEBUG] No account found for this user_id")
+        return None
