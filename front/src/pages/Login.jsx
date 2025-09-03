@@ -1,6 +1,7 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";  // ★追加
+import Header from "../components/Header";  // ★追加
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -38,9 +39,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <form onSubmit={handleLogin} className="w-full max-w-sm bg-white rounded-xl shadow p-6 space-y-4">
-        <h1 className="text-xl font-bold text-center">ログイン</h1>
+    <div className="fixed inset-0 overflow-hidden bg-white">
+      <Header title="ログイン" showBackButton={false} />
+      <div className="flex justify-center h-[calc(100vh-56px)] overflow-hidden">
+        <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col bg-gray-50">
+          <div className="flex items-center justify-center flex-1">
+            <form onSubmit={handleLogin} className="w-full max-w-sm bg-white rounded-xl shadow p-6 space-y-4">
+        
 
         <div>
           <label className="block text-sm text-gray-600 mb-1">メールアドレス</label>
@@ -74,7 +79,10 @@ export default function Login() {
         </button>
 
         {status && <div className="text-center text-sm mt-2">{status}</div>}
-      </form>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
