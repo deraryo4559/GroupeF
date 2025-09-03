@@ -26,6 +26,9 @@ export default function Login() {
       setStatus("ログイン成功！");
       console.log("ログイン成功:", data.user);
 
+      // ★ sessionStorage に認証情報を保存
+      sessionStorage.setItem("authUser", JSON.stringify(data.user));
+
       // ★ Top.jsx に遷移
       navigate("/", { state: { user: data.user } });
     } catch (err) {

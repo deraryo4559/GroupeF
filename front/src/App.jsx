@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SendMoney from './pages/SendMoney';
 import RequestLink from './components/RequestLink';
 import RequestComplete from './components/RequestComplete';
@@ -14,12 +14,40 @@ import Profile from './pages/Profile';
 import TransactionsList from './pages/TransactionsList.jsx';
 import PaymentRequest from './pages/PaymentRequest';
 
+// 認証が必要なルートを保護するコンポーネント
+function ProtectedRoute({ children }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // セッションストレージから認証情報を確認
+    const saved = sessionStorage.getItem("authUser");
+    if (saved) {
+      try {
+        const user = JSON.parse(saved);
+        if (user && user.user_id) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error("認証情報の解析エラー:", error);
+        sessionStorage.removeItem("authUser");
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">読み込み中...</div>;
+  }
+
+  return isAuthenticated ? children : <Navigate to="/auth" replace />;
+}
+
 function App() {
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Top />} />
           <Route path="/auth" element={<Login />} />
           <Route path="/step3" element={<AddressList />} />
           <Route path="/SendMoney" element={<SendMoney />} />
@@ -31,6 +59,16 @@ function App() {
           <Route path="/payment/complete" element={<PaymentComplete />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/TransactionsList" element={<TransactionsList />} />
+          <Route path="/" element={<ProtectedRoute><Top /></ProtectedRoute>} />
+          <Route path="/step3" element={<ProtectedRoute><AddressList /></ProtectedRoute>} />
+          <Route path="/SendMoney" element={<ProtectedRoute><SendMoney /></ProtectedRoute>} />
+          <Route path="/request" element={<ProtectedRoute><RequestLink /></ProtectedRoute>} />
+          <Route path="/request/complete" element={<ProtectedRoute><RequestComplete /></ProtectedRoute>} />
+          <Route path="/SendMoneyComplete" element={<ProtectedRoute><SendMoneyComplete /></ProtectedRoute>} />
+          <Route path="/billing-status" element={<ProtectedRoute><BillingStatus /></ProtectedRoute>} />
+          <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+          <Route path="/payment/complete" element={<ProtectedRoute><PaymentComplete /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/pay/:token" element={<PaymentRequest />} />
         </Routes>
       </div>
