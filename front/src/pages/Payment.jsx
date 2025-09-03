@@ -32,8 +32,8 @@ const Payment = () => {
     return (
         <>
             <Header title="支払い" backTo="/billing-status" />
-            <div className="pt-16 flex justify-center">
-                <div className="max-w-sm w-full p-6 flex flex-col justify-center">
+            <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
+                <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-xl font-bold text-center text-gray-800 mb-6">
                         支払う
                     </h2>
