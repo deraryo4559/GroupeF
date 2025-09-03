@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Button1 from '../components/button1';
 import Balance from '../components/Balance';
 import Header from '../components/Header';
+import Icon from "../components/Icon";
 
 function SendMoney() {
   const navigate = useNavigate();
@@ -21,25 +22,25 @@ function SendMoney() {
     email: "",
   };
 
-  // 🔹 バックエンドから残高を取得
-// 🔹 バックエンドから残高を取得
-useEffect(() => {
-  if (!user.user_id) return;
 
-  fetch(`http://localhost:5000/api/accounts/52`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("口座情報の取得に失敗しました");
-      }
-      return response.json();
-    })
-    .then(data => {
-      setBalance(data.balance); // DBから取得した残高を反映
-    })
-    .catch(error => {
-      console.error("残高の取得に失敗:", error);
-    });
-}, [user.id]);
+  // 🔹 バックエンドから残高を取得
+  useEffect(() => {
+    if (!user.user_id) return;
+
+    fetch(`http://localhost:5000/api/accounts/52`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("口座情報の取得に失敗しました");
+        }
+        return response.json();
+      })
+      .then(data => {
+        setBalance(data.balance); // DBから取得した残高を反映
+      })
+      .catch(error => {
+        console.error("残高の取得に失敗:", error);
+      });
+  }, [user.id]);
 
 
   // userのlimitも残高と同期
@@ -89,42 +90,27 @@ useEffect(() => {
     }
   };
 
-  const handleRequestMoney = () => {
-    navigate("/request", { state: { user: syncedUser } });
-  };
-
   return (
     <>
-      <Header title="送金" backTo="/step3" />
-      <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
-        <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-sm p-6 text-gray-800">
+      <Header title="送金" />
+      <div className="flex justify-center h-screen">
+        <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col justify-center bg-gray-50">
           {/* 送金先 */}
-          <div className="flex items-start gap-4">
-            <div className="text-sm text-gray-600 leading-6 mt-1">送金先</div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
-                <img
-                  src={user.avatar_path}
-                  alt={user.name}
-                  className="w-12 h-12 object-cover rounded-full"
-                />
-              </div>
-              {/* ★ 選択した相手の名前を表示 */}
-              <div className="text-[15px] md:text-base font-medium tracking-wide">
-                {user.name}
-              </div>
+          <div className="flex items-start mt-6">
+            <div className="text-sm text-gray-600 leading-6">送金先</div>
+            <div className="flex items-center gap-3 mt-4">
+              <Icon
+                img={user.avatar_path}
+                name={user.name}
+              />
             </div>
           </div>
 
           {/* 送金上限額 */}
           <Balance balance={balance} label="送金上限額" />
 
-          {/* 現在の残高 */}
-          <Balance balance={balance} label="現在の残高" highlight />
-
-
           {/* 送金金額 */}
-          <div className="mt-6">
+          <div className="mt-4">
             <div className="text-sm text-gray-600 leading-6 mb-2">送金金額</div>
             <div className="relative">
               <input
@@ -143,7 +129,7 @@ useEffect(() => {
           </div>
 
           {/* メッセージ（任意） */}
-          <div className="mt-6">
+          <div className="mt-4">
             <div className="text-sm text-gray-600 leading-6 mb-2">メッセージ（任意）</div>
             <input
               type="text"
