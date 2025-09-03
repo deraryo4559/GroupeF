@@ -21,6 +21,10 @@ def create_app():
     from .routes.auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
+    # 請求データをpayment_requestテーブルに保存
+    from .routes.requests import requests_bp
+    app.register_blueprint(requests_bp, url_prefix="/api/requests")
+
     # デバッグ：URLマップを起動時に出力
     print("=== URL MAP ===")
     print(app.url_map)

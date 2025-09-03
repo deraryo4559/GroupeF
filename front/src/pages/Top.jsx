@@ -7,9 +7,17 @@ import BalanceCard from '../components/BalanceCard';
 import MenuIconButton from '../components/MenuIconButton';
 import { SendIcon, RequestIcon, StatusIcon, ProfileIcon, ReceiptIcon } from '../components/MenuIcons';
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const Top = () => {
-    const [userName, setUserName] = useState("読み込み中…");
+    const location = useLocation();
+  const loginUser = location.state?.user;
+  useEffect(() => {
+    if (loginUser) {
+      sessionStorage.setItem("authUser", JSON.stringify(loginUser));
+    }
+  }, [loginUser]);
+  const [userName, setUserName] = useState("読み込み中…");
     const [avatarPath, setAvatarPath] = useState("/images/human1.png");
     const [accountNumber, setAccountNumber] = useState("取得中…");
     const [balance, setBalance] = useState("取得中…"); // 数値型で初期化
@@ -19,7 +27,7 @@ const Top = () => {
 
     // --- ユーザー情報取得 ---
     useEffect(() => {
-        const TARGET_USER_ID = 52;
+        const TARGET_USER_ID = loginUser?.user_id ?? 52;
         setIsLoading(true);
 
         // --- ユーザー情報取得 ---
