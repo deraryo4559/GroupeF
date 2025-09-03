@@ -13,35 +13,43 @@ function SendMoney() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   // ユーザー情報（location.state から受け取る）
   const user = state?.user ?? {
     id: 0,
+    user_id: 0,  // user_idも追加
     name: "サンプル 氏名",
     avatar_path: "/images/human1.png",
     email: "",
   };
 
-
-  // 🔹 バックエンドから残高を取得
+  // バックエンドから残高を取得
   useEffect(() => {
-    if (!user.user_id) return;
-
-    fetch(`http://localhost:5000/api/accounts/52`)
-      .then(response => {
+    const fetchBalance = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/accounts/52`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
         if (!response.ok) {
-          throw new Error("口座情報の取得に失敗しました");
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.json();
-      })
-      .then(data => {
-        setBalance(data.balance); // DBから取得した残高を反映
-      })
-      .catch(error => {
+        
+        const data = await response.json();
+        console.log("Balance data:", data);  // デバッグ用
+        setBalance(data.balance);
+      } catch (error) {
         console.error("残高の取得に失敗:", error);
-      });
-  }, [user.id]);
+        setError("残高の取得に失敗しました");
+      }
+    };
 
+    fetchBalance();
+  }, []);
 
   // userのlimitも残高と同期
   const syncedUser = { ...user, limit: balance };
@@ -49,42 +57,97 @@ function SendMoney() {
   const isAmountValid =
     amount !== "" &&
     Number(amount) >= 1 &&
-    Number(amount) <= balance; // 残高以下であることをチェック
+    Number(amount) <= balance;
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
-    if (value === "") return setAmount("");
+    setError(""); // エラーをクリア
+    
+    if (value === "") {
+      setAmount("");
+      return;
+    }
+    
     const num = Number(value);
-    if (num < 1) return setAmount("1");
+    if (num < 1) {
+      setAmount("1");
+      return;
+    }
+    
+    if (num > balance) {
+      setError("残高を超えています");
+    }
+    
     setAmount(value);
   };
 
   const handleSendMoney = async () => {
     if (!isAmountValid || isProcessing) return;
+
     setIsProcessing(true);
+    setError("");
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 送金先のIDを決定（user_idまたはidのどちらかを使用）
+      const receiverId = user.user_id;
+      
+      console.log("Sending request:", {
+        sender_id: 52,
+        receiver_id: receiverId,
+        amount: Number(amount),
+        message: message,
+      });
 
-      const sendAmount = Number(amount);
-      const newBalance = balance - sendAmount;
+      const response = await fetch("http://localhost:5000/api/send_money/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sender_id: 52,              // 自分のID
+          receiver_id: receiverId,    // 送金相手のID
+          amount: Number(amount),
+          message: message,
+        }),
+      });
 
-      // 残高をローカルストレージに保存
-      localStorage.setItem('userBalance', newBalance.toString());
-      setBalance(newBalance);
+      console.log("HTTP Response:", response);
 
-      // 送金完了画面に遷移（残高情報も渡す）
+      // レスポンスがJSONでない場合のエラーハンドリング
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error("サーバーからの応答が不正です");
+      }
+
+      console.log("Response JSON:", data);
+
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP ${response.status}: 送金APIの呼び出しに失敗しました`);
+      }
+
+      // DB更新後の新しい残高を反映
+      if (data.new_balance !== undefined) {
+        setBalance(data.new_balance);
+      }
+
+      // 完了画面に遷移
       navigate("/SendMoneyComplete", {
         state: {
           user: syncedUser,
           amount,
           message,
           previousBalance: balance,
-          newBalance: newBalance
-        }
+          newBalance: data.new_balance || balance,
+        },
       });
     } catch (error) {
-      alert("送金に失敗しました。もう一度お試しください。");
+      console.error("送金エラー:", error);
+      setError(error.message || "送金に失敗しました。もう一度お試しください。");
     } finally {
       setIsProcessing(false);
     }
@@ -95,6 +158,14 @@ function SendMoney() {
       <Header title="送金" />
       <div className="flex justify-center">
         <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
+          
+          {/* エラーメッセージ */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
           {/* 送金先 */}
           <div className="flex items-start mt-6">
             <div className="text-sm text-gray-600 leading-6">送金先</div>
@@ -135,9 +206,12 @@ function SendMoney() {
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              placeholder="メッセージを入力してください"
               className="w-full pl-4 pr-4 py-3 text-[15px] md:text-base rounded-xl border border-gray-300 bg-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
           </div>
+
+
 
           {/* 送金ボタン */}
           <div className="mt-6 flex justify-center">
