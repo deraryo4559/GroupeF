@@ -11,6 +11,7 @@ import Payment from './pages/Payment';
 import PaymentComplete from './pages/PaymentComplete';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import PaymentRequest from './pages/PaymentRequest';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment/complete" element={<PaymentComplete />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/pay/:token" element={<PaymentRequest />} />
         </Routes>
       </div>
     </Router>

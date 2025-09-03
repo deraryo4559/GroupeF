@@ -95,7 +95,10 @@ function RequestLink() {
         return;
       }
 
-      const { link, amount, message } = data.request;
+      const { token, amount, message } = data.request;
+
+      // フロントエンド側でリンクを生成（現在のオリジンを使用）
+      const link = `${window.location.origin}/pay/${token}`;
 
       // 完了画面へ遷移（サーバー返却の正式データを使う）
       navigate("/request/complete", {
