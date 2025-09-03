@@ -135,7 +135,7 @@ const Top = () => {
                                 icon={<ProfileIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
-                                onClick={() => alert('準備中')}
+                                onClick={() => window.location.href = '/profile'}
                             />
                         </section>
                     </div>
