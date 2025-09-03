@@ -6,17 +6,25 @@ import Header from '../components/Header';
 import BalanceCard from '../components/BalanceCard';
 import MenuIconButton from '../components/MenuIconButton';
 import { SendIcon, RequestIcon, StatusIcon, ProfileIcon, ReceiptIcon } from '../components/MenuIcons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
 const Top = () => {
     const location = useLocation();
+    const navigate = useNavigate();
   const loginUser = location.state?.user;
   useEffect(() => {
     if (loginUser) {
       sessionStorage.setItem("authUser", JSON.stringify(loginUser));
     }
   }, [loginUser]);
+
+    // ログアウト機能
+    const handleLogout = () => {
+        sessionStorage.removeItem("authUser");
+        navigate("/auth");
+    };
+
   const [userName, setUserName] = useState("読み込み中…");
     const [avatarPath, setAvatarPath] = useState("/images/human1.png");
     const [accountNumber, setAccountNumber] = useState("取得中…");
@@ -138,6 +146,16 @@ const Top = () => {
                                 onClick={() => window.location.href = '/profile'}
                             />
                         </section>
+
+                        {/* ログアウトボタン */}
+                        <div className="mt-6">
+                            <button
+                                onClick={handleLogout}
+                                className="w-full py-3 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+                            >
+                                ログアウト
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
