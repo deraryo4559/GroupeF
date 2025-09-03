@@ -153,10 +153,12 @@ function SendMoney() {
     }
   };
 
+  const isOverLimit = amount !== "" && Number(amount) > balance;
+
   return (
     <>
       <Header title="送金" />
-      <div className="flex justify-center">
+      <div className="flex justify-center h-screen">
         <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
           
           {/* エラーメッセージ */}
@@ -197,6 +199,21 @@ function SendMoney() {
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm md:text-base">円</span>
             </div>
+          </div>
+
+          <div className="min-h-6 flex items-center pt-1 overflow-hidden"> {/* 高さを予約するためのコンテナ */}
+            {isOverLimit && (
+              <div className="flex items-center space-x-1 animate-fadeIn">
+                {/* 小さな警告アイコン */}
+                <svg className="h-4 w-4 flex-shrink-0 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-12a1 1 0 102 0V7a1 1 0 10-2 0v-1zm1 4a1 1 0 100 2h.01a1 1 0 100-2H10z" clipRule="evenodd" />
+                </svg>
+                {/* 警告テキスト */}
+                <p className="text-red-600 text-xs font-medium">
+                  送金上限額を超過しています
+                </p>
+              </div>
+            )}
           </div>
 
           {/* メッセージ（任意） */}
