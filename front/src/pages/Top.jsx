@@ -4,8 +4,16 @@ import Button1 from '../components/button1';
 import Icon from '../components/Icon';
 import Header from '../components/Header';
 import Balance from '../components/Balance';
+import { useLocation } from 'react-router-dom';
 
 const Top = () => {
+  const location = useLocation();
+  const loginUser = location.state?.user;
+  useEffect(() => {
+    if (loginUser) {
+      sessionStorage.setItem("authUser", JSON.stringify(loginUser));
+    }
+  }, [loginUser]);
   const [userName, setUserName] = useState("読み込み中…");
   const [avatarPath, setAvatarPath] = useState("/images/human1.png");
   const [accountNumber, setAccountNumber] = useState("取得中…");
@@ -14,7 +22,7 @@ const Top = () => {
 
   // --- ユーザー情報取得 ---
   useEffect(() => {
-  const TARGET_USER_ID = 52;
+  const TARGET_USER_ID = loginUser?.user_id ?? 52;
 
   // --- ユーザー情報取得 ---
   fetch('http://localhost:5000/api/users/')   // ← 末尾スラッシュありを推奨
