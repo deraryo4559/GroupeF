@@ -4,6 +4,7 @@ import Icon from '../components/Icon';
 import Header from '../components/Header';
 import BalanceCard from '../components/BalanceCard';
 import MenuIconButton from '../components/MenuIconButton';
+import UserInfoCard from '../components/UserInfoCard';
 import { SendIcon, RequestIcon, StatusIcon, ProfileIcon, ReceiptIcon } from '../components/MenuIcons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -84,16 +85,12 @@ const Top = () => {
                 <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col bg-gray-50">
                     <div className="space-y-4 overflow-hidden">
                         {/* ユーザー情報 */}
-                        <section className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-20 w-20 shrink-0"
-                                style={{ backgroundImage: `url(${avatarPath})` }}>
-                            </div>
-                            <div>
-                                <p className="text-gray-900 text-xl font-bold leading-tight">{userName}</p>
-                                <p className="text-gray-500 text-sm">@user_{userId || "sample"}</p>
-                                <p className="text-gray-500 text-sm">口座番号: {accountNumber}</p>
-                            </div>
-                        </section>
+                        <UserInfoCard
+                            userName={userName}
+                            userId={userId}
+                            accountNumber={accountNumber}
+                            avatarPath={avatarPath}
+                        />
 
                         {/* 残高表示 */}
                         <BalanceCard
@@ -108,7 +105,7 @@ const Top = () => {
                                 icon={<SendIcon />}
                                 bgColor="bg-red-100"
                                 textColor="text-red-600"
-                                onClick={() => window.location.href = '/step3'}
+                                onClick={() => navigate('/step3')}
                             />
 
                             <MenuIconButton
@@ -116,7 +113,7 @@ const Top = () => {
                                 icon={<RequestIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
-                                onClick={() => window.location.href = '/request'}
+                                onClick={() => navigate('/request')}
                             />
 
                             <MenuIconButton
@@ -124,7 +121,7 @@ const Top = () => {
                                 icon={<ReceiptIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
-                                onClick={() => window.location.href = '/billing-status'}
+                                onClick={() => navigate('/billing-status')}
                             />
 
                             <MenuIconButton
@@ -132,7 +129,7 @@ const Top = () => {
                                 icon={<ProfileIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
-                                onClick={() => window.location.href = '/profile'}
+                                onClick={() => navigate('/profile')}
                             />
                         </section>
 
