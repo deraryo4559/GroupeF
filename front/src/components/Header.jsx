@@ -85,7 +85,7 @@ function Header({
 
     // ヘッダー部分
     const headerElement = (
-        <header className={`fixed top-0 left-0 right-0 bg-white shadow-sm z-10 ${className}`}>
+        <header className={`max-w-sm w-full fixed top-0 left-0 right-0 mx-auto bg-white shadow-sm z-10 ${className}`}>
             <div className={`flex items-center justify-between px-4 ${headerHeight}`}>
                 {/* 戻るボタン */}
                 {showBackButton && (
@@ -128,7 +128,7 @@ function Header({
         return (
             <>
                 {headerElement}
-                <div className="pt-16">
+                <div className="pt-16 max-w-sm w-full mx-auto">
                     {children}
                 </div>
             </>
@@ -140,7 +140,7 @@ function Header({
         return (
             <>
                 {headerElement}
-                <div className={`${headerHeight} w-full`}></div>
+                <div className={`${headerHeight} w-full max-w-sm mx-auto`}></div>
             </>
         );
     }
