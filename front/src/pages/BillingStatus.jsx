@@ -84,14 +84,10 @@ const BillingStatus = () => {
     return (
         <>
             <Header title="請求ステータス" backTo="/" />
-            <div className="bg-white min-h-screen p-4 font-sans">
-                <div className="max-w-md mx-auto">
-                    {/* ヘッダー */}
-                    <div className="flex justify-between items-center mb-6">
-                    </div>
-
+            <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
+                <div className="w-full max-w-md mx-auto">
                     {/* リスト */}
-                    <div className="bg-white rounded-xl shadow overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-sm p-4 overflow-hidden">
                         {billingHistory.length > 0 ? (
                             <ul className="divide-y divide-gray-200">
                                 {billingHistory.map((billing) => {
@@ -112,6 +108,9 @@ const BillingStatus = () => {
                                                     <PayerInfo
                                                         payer={billing.paidBy}
                                                         className="ml-4"
+                                                        size="sm"
+                                                        align="left"
+                                                        labelText="支払者"
                                                     />
                                                 )}
                                             </div>
