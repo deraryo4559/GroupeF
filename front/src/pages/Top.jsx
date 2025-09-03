@@ -67,13 +67,13 @@ const Top = () => {
                             お客様情報
                         </h2>
                         <Icon
-                            img="\images\human1.png"
-                            name="サンプル氏名"
+                            img={avatarPath}
+                            name={userName}
                         />
 
                         {/* 口座番号表示 */}
                         <div className="mt-4 mb-4">
-                            <p className="text-sm text-gray-600">口座番号：〇〇〇〇〇〇</p>
+                            <p className="text-sm text-gray-600">口座番号：{accountNumber}</p>
                         </div>
 
                         {/* 預金残高（コンポーネント化済み） */}
