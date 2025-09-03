@@ -1,23 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
+import Button1 from "./button1";
+import Botton1 from './button1';
 
 function RequestLink() {
-  const [reqAmount, setReqAmount] = useState("3000");
-  const [reqMsg, setReqMsg] = useState("飲み会代お願いします！");
+  const [reqAmount, setReqAmount] = useState("");
+  const [displayAmount, setDisplayAmount] = useState(""); // 表示用金額（カンマ区切り）
+  const [reqMsg, setReqMsg] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
+  const [userName, setUserName] = useState("ユーザー名");
   const navigate = useNavigate();
 
+  // 現在の日付と時間を設定
+  useEffect(() => {
+    const now = new Date();
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    setCurrentDate(now.toLocaleDateString('ja-JP', dateOptions));
+    setCurrentTime(now.toLocaleTimeString('ja-JP', timeOptions));
+
+    // ユーザー情報を取得 (ダミー)
+    const fetchUserName = async () => {
+      try {
+        // APIから取得する場合はこちらに実装
+        // 仮のデータ
+        setUserName("サンプル氏名");
+      } catch (error) {
+        console.error("ユーザー情報の取得に失敗:", error);
+      }
+    };
+
+    fetchUserName();
+  }, []);
+
+  // 金額入力の処理 - カンマ区切り対応版
   const handleAmountChange = (e) => {
-    const v = e.target.value;
-    if (v === "") return setReqAmount("");
-    const n = Number(v);
-    if (n < 1) return setReqAmount("1");
-    if (n > 50000) return setReqAmount("50000");
-    setReqAmount(v);
+    // 入力値から数字以外の文字（カンマや記号など）をすべて除去
+    const rawValue = e.target.value.replace(/[^\d]/g, '');
+
+    if (rawValue === "") {
+      setReqAmount("");
+      setDisplayAmount("");
+      return;
+    }
+
+    // 数値としてのチェック
+    const numValue = Number(rawValue);
+    if (numValue < 1) {
+      setReqAmount("1");
+      setDisplayAmount("1");
+      return;
+    }
+
+    if (numValue > 1000000) {
+      setReqAmount("1000000");
+      setDisplayAmount("1,000,000");
+      return;
+    }
+
+    // 内部的な値は数値のまま保存
+    setReqAmount(rawValue);
+
+    // 表示用の値はカンマ区切りにフォーマット
+    setDisplayAmount(Number(rawValue).toLocaleString());
   };
 
   const canCreate =
-    reqAmount !== "" && Number(reqAmount) >= 1 && Number(reqAmount) <= 50000;
+    reqAmount !== "" && Number(reqAmount) >= 1 && Number(reqAmount) <= 1000000;
 
   // ★ APIに保存して、返ってきたデータで完了画面へ遷移
   const handleCreate = async () => {
@@ -44,7 +95,10 @@ function RequestLink() {
         return;
       }
 
-      const { link, amount, message } = data.request;
+      const { token, amount, message } = data.request;
+
+      // フロントエンド側でリンクを生成（現在のオリジンを使用）
+      const link = `${window.location.origin}/pay/${token}`;
 
       // 完了画面へ遷移（サーバー返却の正式データを使う）
       navigate("/request/complete", {
@@ -57,63 +111,89 @@ function RequestLink() {
   };
 
   return (
-    <>
+    <div className="fixed inset-0 overflow-hidden bg-white">
+      {/* ヘッダー */}
       <Header title="請求リンクの作成" backTo="/" />
-      <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
-        <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-sm p-6 text-gray-800">
-          <div className="text-sm text-gray-600 leading-6 mb-2">請求リンクの作成</div>
 
-          {/* 請求金額 */}
-          <div className="mt-2">
-            <div className="text-sm text-gray-600 leading-6 mb-2">請求金額</div>
-            <div className="relative">
-              <input
-                type="number"
-                inputMode="numeric"
-                min="1"
-                max="50000"
-                step="1"
-                placeholder="金額"
-                value={reqAmount}
-                onChange={handleAmountChange}
-                className="w-full pr-10 pl-4 py-3 text-[15px] md:text-base rounded-xl border border-gray-300 bg-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+      {/* メインとフッターを含むフレックスコンテナ */}
+      <div className="flex flex-col justify-between h-[calc(100vh-56px)] max-w-sm mx-auto bg-gray-50">
+        {/* メインコンテンツ */}
+        <main className="p-6 space-y-8 overflow-y-auto">
+          <div className="space-y-6">
+            {/* 金額入力 */}
+            <div className="space-y-4 text-center">
+              <label className="text-gray-700 text-sm font-medium" htmlFor="amount">
+                請求金額
+              </label>
+              <div className="relative flex items-center justify-center">
+                <div className="relative w-full">
+                  <span className="absolute top-1/2 -translate-y-1/2 left-4 text-gray-400 text-3xl md:text-4xl font-bold pointer-events-none">
+                    ¥
+                  </span>
+                  <input
+                    id="amount"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={displayAmount}
+                    onChange={handleAmountChange}
+                    className="w-full py-3 px-14 rounded-none border-0 border-b-2 border-gray-200 bg-transparent text-center text-4xl md:text-5xl font-extrabold text-gray-900 placeholder:text-gray-300 focus:outline-none focus:border-red-500 focus:ring-0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* メッセージ入力 */}
+            <div className="space-y-2">
+              <label className="text-gray-700 text-sm font-medium" htmlFor="note">
+                メッセージ（任意）
+              </label>
+              <textarea
+                id="note"
+                rows={3}
+                value={reqMsg}
+                onChange={(e) => setReqMsg(e.target.value)}
+                placeholder="ランチ代、買い物代など"
+                className="w-full resize-none rounded-xl border border-gray-200 bg-gray-100 p-4 text-base font-normal leading-normal text-gray-800 placeholder:text-gray-500 "
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm md:text-base">円</span>
             </div>
           </div>
 
-          {/* メッセージ（任意） */}
-          <div className="mt-6">
-            <div className="text-sm text-gray-600 leading-6 mb-2">メッセージ（任意）</div>
-            <textarea
-              rows={3}
-              value={reqMsg}
-              onChange={(e) => setReqMsg(e.target.value)}
-              className="w-full pl-4 pr-4 py-3 text-[15px] md:text-base rounded-xl border border-gray-300 bg-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
-            />
+          {/* 詳細情報 */}
+          <div className="space-y-4">
+            <div className="bg-gray-100/60 rounded-xl p-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <p className="text-gray-600 text-sm">請求者</p>
+                <p className="text-gray-900 font-semibold">あなた（{userName}）</p>
+              </div>
+              <div className="border-t border-gray-200 my-2"></div>
+              <div className="flex justify-between items-center">
+                <p className="text-gray-600 text-sm">日付</p>
+                <p className="text-gray-900 font-semibold">{currentDate}</p>
+              </div>
+              <div className="border-t border-gray-200 my-2"></div>
+              <div className="flex justify-between items-center">
+                <p className="text-gray-600 text-sm">時間</p>
+                <p className="text-gray-900 font-semibold">{currentTime}</p>
+              </div>
+            </div>
           </div>
+        </main>
 
-          {/* 作成ボタン */}
-          <button
-            type="button"
+        {/* フッター（ボタン） */}
+        <footer className="p-4 bg-white border-t border-gray-200 sticky bottom-0 left-0 right-0">
+          <Button1
+            variant="danger"
+            size="large"
+            onClick={handleCreate}
             disabled={!canCreate}
-            onClick={handleCreate}  // ★ここを変更
-            className={`mt-6 w-full py-3.5 rounded-xl text-white text-[15px] md:text-base font-medium shadow-inner transition-colors
-              ${canCreate ? "bg-red-500 hover:bg-red-600 cursor-pointer" : "bg-gray-300 cursor-not-allowed"}`}
+            className="w-full h-14 rounded-full flex items-center justify-center font-bold tracking-wide"
           >
-            リンクを作成
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="mt-3 w-full py-3.5 rounded-xl text-[15px] md:text-base font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
-          >
-            ← Topに戻る
-          </button>
-        </div>
+            リンクを生成
+          </Button1>
+        </footer>
       </div>
-    </>
+    </div>
   );
 }
 

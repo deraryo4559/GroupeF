@@ -46,15 +46,15 @@ def create_request():
             (token,)
         ).fetchone()
 
-        # フロントで利用するリンク
-        link = f"{request.host_url.rstrip('/')}/pay/{row['token']}"
+        # フロントで利用するリンク - ポート3000のフロントエンドURL
+        # 注: host_urlはFlaskサーバーのURL（localhost:5000）なので、ここでは単にtokenのみを返す
+        # フロントエンド側でフルURLを構築する
 
         return jsonify({
             "ok": True,
             "request": {
                 "id": row["id"],
                 "token": row["token"],
-                "link": link,
                 "requester_user_id": row["requester_user_id"],
                 "amount": row["amount"],
                 "message": row["message"],
@@ -92,7 +92,6 @@ def list_requests():
             items.append({
                 "id": r["id"],
                 "token": r["token"],
-                "link": f"{request.host_url.rstrip('/')}/pay/{r['token']}",
                 "requester_user_id": r["requester_user_id"],
                 "amount": r["amount"],
                 "message": r["message"],

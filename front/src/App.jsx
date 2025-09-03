@@ -12,6 +12,7 @@ import PaymentComplete from './pages/PaymentComplete';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import TransactionsList from './pages/TransactionsList.jsx';
+import PaymentRequest from './pages/PaymentRequest';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/payment/complete" element={<PaymentComplete />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/TransactionsList" element={<TransactionsList />} />
+          <Route path="/pay/:token" element={<PaymentRequest />} />
         </Routes>
       </div>
     </Router>
