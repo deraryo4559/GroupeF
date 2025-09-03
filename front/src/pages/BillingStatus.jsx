@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button1 from '../components/button1';
 import BillingInfo from '../components/BillingInfo';
@@ -6,138 +6,175 @@ import PayerInfo from '../components/PayerInfo';
 import Header from '../components/Header';
 
 const BillingStatus = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // 仮のデータ: 実際のアプリケーションではAPIから取得する
-    const [billingHistory] = useState([
-        {
-            id: 1,
-            amount: 5000,
-            message: "先日の食事代",
-            createdAt: "2025-08-30T15:30:00",
-            status: "paid",
-            paidBy: {
-                id: 101,
-                name: "鈴木 花子",
-                icon: "/images/human2.png"
-            }
-        },
-        {
-            id: 2,
-            amount: 3000,
-            message: "映画のチケット代",
-            createdAt: "2025-08-28T10:15:00",
-            status: "pending",
-            paidBy: null
-        },
-        {
-            id: 3,
-            amount: 12000,
-            message: "旅行の宿泊費",
-            createdAt: "2025-08-25T08:45:00",
-            status: "paid",
-            paidBy: {
-                id: 102,
-                name: "佐藤 次郎",
-                icon: "/images/human3.png"
-            }
-        },
-        {
-            id: 4,
-            amount: 2500,
-            message: "カフェでの飲み物代",
-            createdAt: "2025-08-20T14:20:00",
-            status: "pending",
-            paidBy: null
+  const [billingHistory, setBillingHistory] = useState([]);
+  const [loading, setLoading] = useState(true);        // 任意: ローディング表示
+  const [error, setError] = useState(null);            // 任意: エラー表示
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem('authUser');
+    const me = saved ? JSON.parse(saved) : null;
+    const requester_user_id = me?.user_id ?? 52; // フォールバック
+
+    // Vite のプロキシを使っているなら相対パス推奨（/api/...）
+    fetch(`http://localhost:5000/api/requests/?requester_user_id=${requester_user_id}`)
+      .then(async (res) => {
+        const data = await res.json().catch(() => null);
+        console.log(data)
+        if (!res.ok || !data?.ok) {
+          throw new Error(data?.message || `Failed: ${res.status}`);
         }
-    ]);
+        // サーバのフィールド -> UI 用へマッピング
+        // backend: { id, amount, message, status('pending'|'success'|'canceled'), created_at, ... }
+        // UI:      { id, amount, message, status('paid'|'pending'), createdAt, paidBy? }
+        const mapped = data.items.map((r) => ({
+          id: r.id,
+          amount: r.amount,
+          message: r.message || '',
+          createdAt: r.created_at,
+          // success / pending / canceled をそのまま反映
+          status:
+            r.status === 'success'
+              ? 'paid'
+              : r.status === 'canceled'
+              ? 'canceled'
+              : 'pending',
+          paidBy: null,
+        }));
 
-    // 日付をフォーマット
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('ja-JP', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        }).format(date);
-    };
+        setBillingHistory(mapped);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('請求一覧の取得に失敗:', err);
+        setError('請求一覧の取得に失敗しました');
+        setLoading(false);
+      });
+  }, []);
 
-    // ステータスに応じたスタイル
-    const getStatusStyles = (status) => {
-        if (status === 'paid') {
-            return {
-                label: '支払い済み',
-                bgColor: 'bg-green-100',
-                textColor: 'text-green-800'
-            };
-        } else {
-            return {
-                label: '未払い',
-                bgColor: 'bg-yellow-100',
-                textColor: 'text-yellow-800'
-            };
-        }
-    };
+  // 日付をフォーマット（既存のまま）
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ja-JP', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  };
 
-    return (
-        <>
-            <Header title="請求ステータス" backTo="/" />
-            <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
-                <div className="w-full max-w-md mx-auto">
-                    {/* リスト */}
-                    <div className="bg-white rounded-xl shadow-sm p-4 overflow-hidden">
-                        {billingHistory.length > 0 ? (
-                            <ul className="divide-y divide-gray-200">
-                                {billingHistory.map((billing) => {
-                                    const statusStyle = getStatusStyles(billing.status);
+  // ステータスに応じたスタイル（既存のまま）
+  const getStatusStyles = (status) => {
+    if (status === 'paid') {
+      return {
+        label: '支払い済み',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-800',
+      };
+    } else if (status === 'canceled') {
+        return {
+          label: 'キャンセル済み',
+          bgColor: 'bg-green-100',
+          textColor: 'text-green-800',
+        };
+    }
+    else {
+      return {
+        label: '未払い',
+        bgColor: 'bg-yellow-100',
+        textColor: 'text-yellow-800',
+      };
+    }
+  };
 
-                                    return (
-                                        <li key={billing.id} className="p-4">
-                                            <div className="flex justify-between items-start">
-                                                {/* 請求情報 */}
-                                                <BillingInfo
-                                                    billing={billing}
-                                                    formatDate={formatDate}
-                                                    statusStyle={statusStyle}
-                                                />
+  return (
+    <>
+      <Header title="請求ステータス" backTo="/" />
+      <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
+        <div className="w-full max-w-md mx-auto">
+          <div className="bg-white rounded-xl shadow-sm p-4 overflow-hidden">
+            {loading ? (
+              <div className="p-8 text-center text-gray-500">読み込み中…</div>
+            ) : error ? (
+              <div className="p-8 text-center text-red-600">{error}</div>
+            ) : billingHistory.length > 0 ? (
+              <ul className="divide-y divide-gray-200">
+                {billingHistory.map((billing) => {
+                  const statusStyle = getStatusStyles(billing.status);
+                  return (
+                    <li key={billing.id} className="p-4">
+                      <div className="flex justify-between items-start">
+                        {/* 請求情報 */}
+                        <BillingInfo
+                          billing={billing}
+                          formatDate={formatDate}
+                          statusStyle={statusStyle}
+                        />
 
-                                                {/* 支払いユーザー情報（支払い済みのときだけ） */}
-                                                {billing.status === 'paid' && (
-                                                    <PayerInfo
-                                                        payer={billing.paidBy}
-                                                        className="ml-4"
-                                                        size="sm"
-                                                        align="left"
-                                                        labelText="支払者"
-                                                    />
-                                                )}
-                                            </div>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        ) : (
-                            <div className="p-8 text-center text-gray-500">
-                                請求履歴がありません
-                            </div>
-                        )}
-                    </div>
+                        <div className="flex flex-col items-end space-y-2 ml-4">
+                          {/* 支払いユーザー情報（支払い済みのときだけ） */}
+                          {billing.status === 'paid' && billing.paidBy && (
+                            <PayerInfo
+                              payer={billing.paidBy}
+                              className="ml-4"
+                              size="sm"
+                              align="left"
+                              labelText="支払者"
+                            />
+                          )}
 
-                    <div className="mt-6">
-                        <Button1
-                            onClick={() => navigate('/')}
-                            variant="primary"
-                            className="w-full"
-                        >
-                            ホームに戻る
-                        </Button1>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+                          {/* 未払いなら「請求取り下げ」ボタンを表示 */}
+                          {billing.status === 'pending' && (
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const res = await fetch(`http://localhost:5000/api/requests/${billing.id}/cancel`, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                });
+                                  const data = await res.json();
+                                  if (!res.ok || !data.ok) {
+                                    alert("取り下げに失敗しました");
+                                    return;
+                                  }
+                                  // 状態を即座に更新
+                                  setBillingHistory((prev) =>
+                                    prev.map((b) =>
+                                      b.id === billing.id ? { ...b, status: "canceled" } : b
+                                    )
+                                  );
+                                } catch (err) {
+                                  console.error("通信エラー:", err);
+                                  alert("通信エラーが発生しました");
+                                }
+                              }}
+                              className="px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600"
+                            >
+                              請求取り下げ
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <div className="p-8 text-center text-gray-500">請求履歴がありません</div>
+            )}
+          </div>
+
+          <div className="mt-6">
+            <Button1 onClick={() => navigate('/')} variant="primary" className="w-full">
+              ホームに戻る
+            </Button1>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default BillingStatus;

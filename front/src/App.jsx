@@ -11,6 +11,7 @@ import Payment from './pages/Payment';
 import PaymentComplete from './pages/PaymentComplete';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import TransactionsList from './pages/TransactionsList.jsx';
 import PaymentRequest from './pages/PaymentRequest';
 
 // 認証が必要なルートを保護するコンポーネント
@@ -48,6 +49,16 @@ function App() {
       <div>
         <Routes>
           <Route path="/auth" element={<Login />} />
+          <Route path="/step3" element={<AddressList />} />
+          <Route path="/SendMoney" element={<SendMoney />} />
+          <Route path="/request" element={<RequestLink />} />
+          <Route path="/request/complete" element={<RequestComplete />} />
+          <Route path="/SendMoneyComplete" element={<SendMoneyComplete />} />
+          <Route path="/billing-status" element={<BillingStatus />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/payment/complete" element={<PaymentComplete />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/TransactionsList" element={<TransactionsList />} />
           <Route path="/" element={<ProtectedRoute><Top /></ProtectedRoute>} />
           <Route path="/step3" element={<ProtectedRoute><AddressList /></ProtectedRoute>} />
           <Route path="/SendMoney" element={<ProtectedRoute><SendMoney /></ProtectedRoute>} />
