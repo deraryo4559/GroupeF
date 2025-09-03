@@ -20,7 +20,7 @@ const BalanceCard = ({
         : balance;
 
     return (
-        <section className={`${bgColor} p-5 rounded-2xl shadow-sm text-white`}>
+        <section className={`${bgColor} p-4 rounded-2xl shadow-sm text-white`}>
             <div className="flex justify-between items-center">
                 <h2 className="text-white text-sm font-medium">{label}</h2>
             </div>
