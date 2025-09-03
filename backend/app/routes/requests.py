@@ -11,7 +11,7 @@ def _db_path() -> str:
     return os.path.join(current_app.root_path, "money_app.db")
 
 # --- 請求作成API ---
-@requests_bp.route("/", methods=["POST"])
+@requests_bp.route("/", methods=["POST", "OPTIONS"])
 @cross_origin()
 def create_request():
     """
@@ -100,5 +100,44 @@ def list_requests():
                 "created_at": r["created_at"],
             })
         return jsonify({"ok": True, "items": items})
+    finally:
+        conn.close()
+
+# --- 請求キャンセルAPI ---
+@requests_bp.route("/<int:request_id>/cancel", methods=["POST", "OPTIONS"])
+@cross_origin()
+def cancel_request(request_id):
+    """
+    POST /api/requests/<id>/cancel
+    Body: {}
+    """
+    conn = sqlite3.connect(_db_path())
+    conn.row_factory = sqlite3.Row
+    try:
+        cur = conn.cursor()
+
+        # ステータスを canceled に更新
+        cur.execute("""
+            UPDATE payment_requests
+            SET status = 'canceled'
+            WHERE id = ? AND status != 'success'
+        """, (request_id,))
+        conn.commit()
+
+        if cur.rowcount == 0:
+            return jsonify({"ok": False, "message": "not found or already completed"}), 404
+
+        row = cur.execute("SELECT * FROM payment_requests WHERE id = ?", (request_id,)).fetchone()
+
+        return jsonify({
+            "ok": True,
+            "request": {
+                "id": row["id"],
+                "status": row["status"],
+                "message": row["message"],
+                "amount": row["amount"],
+                "created_at": row["created_at"],
+            }
+        })
     finally:
         conn.close()

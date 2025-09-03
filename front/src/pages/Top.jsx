@@ -137,6 +137,14 @@ const Top = () => {
                                 textColor="text-gray-600"
                                 onClick={() => window.location.href = '/profile'}
                             />
+
+                            <MenuIconButton
+                                label="取引履歴"
+                                icon={<ProfileIcon />}
+                                bgColor="bg-gray-200"
+                                textColor="text-gray-600"
+                                onClick={() => window.location.href = '/TransactionsList'}
+                            />
                         </section>
                     </div>
                 </div>
