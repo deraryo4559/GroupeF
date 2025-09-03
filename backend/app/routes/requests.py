@@ -138,7 +138,8 @@ def cancel_request(request_id):
                 "created_at": row["created_at"],
             }
         })
-
+    finally:
+        conn.close()
 # --- トークンから請求情報を取得するAPI ---
 @requests_bp.route("/<token>", methods=["GET"])
 @cross_origin()
