@@ -34,11 +34,11 @@ function SendMoney() {
             'Content-Type': 'application/json',
           },
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         console.log("Balance data:", data);  // デバッグ用
         setBalance(data.balance);
@@ -61,24 +61,20 @@ function SendMoney() {
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
-    setError(""); // エラーをクリア
-    
-    if (value === "") {
-      setAmount("");
-      return;
+    setError(""); // 入力時にエラーメッセージをクリア
+
+    // Use a regular expression to allow only digits (0-9).
+    if (/^\d*$/.test(value)) {
+      setAmount(value);
     }
-    
-    const num = Number(value);
-    if (num < 1) {
-      setAmount("1");
-      return;
+  };
+
+  const handleKeyDown = (e) => {
+    // 押されたキーが'e'または'E'の場合
+    if (e.key === 'e' || e.key === 'E') {
+      // 本来のキー入力（'e'と入力されること）をキャンセルする
+      e.preventDefault();
     }
-    
-    if (num > balance) {
-      setError("残高を超えています");
-    }
-    
-    setAmount(value);
   };
 
   const handleSendMoney = async () => {
@@ -90,7 +86,7 @@ function SendMoney() {
     try {
       // 送金先のIDを決定（user_idまたはidのどちらかを使用）
       const receiverId = user.user_id;
-      
+
       console.log("Sending request:", {
         sender_id: 52,
         receiver_id: receiverId,
@@ -160,7 +156,7 @@ function SendMoney() {
       <Header title="送金" />
       <div className="flex justify-center h-screen">
         <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
-          
+
           {/* エラーメッセージ */}
           {error && (
             <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg text-sm">
@@ -183,21 +179,46 @@ function SendMoney() {
           <Balance balance={balance} label="送金上限額" />
 
           {/* 送金金額 */}
-          <div className="mt-4">
-            <div className="text-sm text-gray-600 leading-6 mb-2">送金金額</div>
-            <div className="relative">
+          <div className="relative mt-6">
+            {/* 入力欄の枠線にラベルを重ねるためのコンテナ
+    peer-placeholder-shown を使って、入力中はラベルを上に移動させる
+  */}
+            <div className="absolute left-3 -top-2.5 z-10">
+              <label
+                htmlFor="amount"
+                className="bg-gray-50 px-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-blue-500"
+              >
+                送金金額
+              </label>
+            </div>
+
+            <div className="relative flex items-center">
               <input
+                id="amount"
                 type="number"
                 inputMode="numeric"
                 min="1"
                 max={balance}
                 step="1"
-                placeholder="金額"
+                placeholder=" " // ラベルのアニメーションのために半角スペースを入れる
                 value={amount}
                 onChange={handleAmountChange}
-                className="w-full pr-10 pl-4 py-3 text-[15px] md:text-base rounded-xl border border-gray-300 bg-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                onKeyDown={handleKeyDown}
+                // peerクラスを追加して、ラベルがinputの状態を検知できるようにする
+                className={`peer w-full rounded-xl border bg-white p-4 text-2xl font-bold text-gray-900 shadow-sm transition-colors focus:outline-none focus:ring-2
+        ${isOverLimit
+                    ? "border-red-500 focus:ring-red-500 text-red-600"
+                    : "border-gray-300 focus:ring-blue-500"
+                  }
+      `}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm md:text-base">円</span>
+              <span
+                className={`absolute right-4 text-lg font-medium transition-colors
+        ${isOverLimit ? "text-red-500" : "text-gray-500"}
+      `}
+              >
+                円
+              </span>
             </div>
           </div>
 
@@ -217,7 +238,7 @@ function SendMoney() {
           </div>
 
           {/* メッセージ（任意） */}
-          <div className="mt-4">
+          <div>
             <div className="text-sm text-gray-600 leading-6 mb-2">メッセージ（任意）</div>
             <input
               type="text"
