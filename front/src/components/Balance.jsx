@@ -14,7 +14,7 @@ const Balance = ({
           relative overflow-hidden rounded-2xl shadow-lg border transition-all duration-300 hover:shadow-xl
           ${highlight
             ? "bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 hover:from-green-100 hover:to-emerald-200"
-            : "bg-gradient-to-br from-slate-50 to-red-200 border-gray-200 hover:from-white hover:to-gray-50"
+            : "bg-gradient-to-br from-slate-50 to-red-200 border-gray-200"
           }
         `}
       >
