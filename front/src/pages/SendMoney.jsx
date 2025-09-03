@@ -93,7 +93,7 @@ function SendMoney() {
   return (
     <>
       <Header title="送金" />
-      <div className="flex justify-center">
+      <div className="flex justify-center h-screen">
         <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
           {/* 送金先 */}
           <div className="flex items-start mt-6">
