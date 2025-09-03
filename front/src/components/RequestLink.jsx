@@ -19,11 +19,41 @@ function RequestLink() {
   const canCreate =
     reqAmount !== "" && Number(reqAmount) >= 1 && Number(reqAmount) <= 50000;
 
-  // ★ 生成した請求リンク（ダミー）を持って完了画面へ遷移
-  const handleCreate = () => {
-    const id = Math.random().toString(36).slice(2, 10);
-    const link = `${window.location.origin}/pay/${id}`; // ダミーの請求リンク
-    navigate("/request/complete", { state: { link, amount: reqAmount, msg: reqMsg } });
+  // ★ APIに保存して、返ってきたデータで完了画面へ遷移
+  const handleCreate = async () => {
+    // ログイン中ユーザーIDを sessionStorage から取得
+    const saved = sessionStorage.getItem("authUser");
+    const me = saved ? JSON.parse(saved) : null;
+    const requester_user_id = me?.user_id ?? 52; // fallbackで52
+
+    try {
+      const res = await fetch("http://localhost:5000/api/requests/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requester_user_id,
+          amount: Number(reqAmount),
+          message: reqMsg,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        console.error("請求作成失敗:", data);
+        alert("請求作成に失敗しました");
+        return;
+      }
+
+      const { link, amount, message } = data.request;
+
+      // 完了画面へ遷移（サーバー返却の正式データを使う）
+      navigate("/request/complete", {
+        state: { link, amount, msg: message },
+      });
+    } catch (err) {
+      console.error("通信エラー:", err);
+      alert("通信エラーが発生しました");
+    }
   };
 
   return (
