@@ -7,15 +7,17 @@ import SendMoneyComplete from './pages/SendMoneyComplete';
 import Top from './pages/Top';
 import AddressList from './pages/AddressList';
 import BillingStatus from './pages/BillingStatus';
-
 import Payment from './pages/Payment';
 import PaymentComplete from './pages/PaymentComplete';
+import Login from './pages/Login';
+
 function App() {
   return (
     <Router>
       <div>
         <Routes>
           <Route path="/" element={<Top />} />
+          <Route path="/auth" element={<Login />} />
           <Route path="/step3" element={<AddressList />} />
           <Route path="/SendMoney" element={<SendMoney />} />
           <Route path="/request" element={<RequestLink />} />

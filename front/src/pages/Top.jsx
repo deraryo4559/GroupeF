@@ -10,28 +10,53 @@ const Top = () => {
   const [accountNumber, setAccountNumber] = useState("取得中…");
   const [balance, setBalance] = useState("取得中…");
 
+
+  // --- ユーザー情報取得 ---
   useEffect(() => {
-    // user_id=1 のユーザー情報
-    // 全件取得ではなく、IDを指定して直接取得する！
-    fetch("http://localhost:5000/api/users/1")
-      .then(res => res.json())
-      .then(user1 => { // 受け取るデータは単一のuserオブジェクト
+  const TARGET_USER_ID = 52;
+
+  // --- ユーザー情報取得 ---
+  fetch('http://localhost:5000/api/users/')   // ← 末尾スラッシュありを推奨
+    .then(response => {
+      if (!response.ok) throw new Error('ユーザーデータの取得に失敗しました');
+      return response.json();
+    })
+    .then(data => {
+      if (Array.isArray(data)) {
+        // 文字列/数値どちらでもヒットするように Number() で比較
+        const user1 = data.find(u => Number(u.user_id) === Number(TARGET_USER_ID));
         if (user1) {
           setUserName(user1.name);
           setAvatarPath(user1.avatar_path || "/images/human1.png");
         }
-      });
+      }
+    })
+    .catch(err => {
+      console.error("ユーザー情報の取得に失敗:", err);
+    });
 
-    // user_id=1 のアカウント情報 (こちらは元から正しい)
-    fetch("http://localhost:5000/api/accounts/1")
-      .then(res => res.json())
-      .then(acc => {
-        if (!acc.error) {
-          setAccountNumber(acc.account_number);
-          setBalance(acc.balance);
+  // --- アカウント情報取得 ---
+  fetch('http://localhost:5000/api/accounts/')  // ← 末尾スラッシュあり
+    .then(response => {
+      if (!response.ok) throw new Error('アカウントデータの取得に失敗しました');
+      return response.json();
+    })
+    .then(data => {
+      if (Array.isArray(data)) {
+        const acc1 = data.find(a => Number(a.user_id) === Number(TARGET_USER_ID));
+        if (acc1) {
+          setAccountNumber(acc1.account_number);
+          // Balance は数値前提なので数値に直してからセット
+          setBalance(Number(acc1.balance));
         }
-      });
-  }, []);
+      }
+    })
+    .catch(err => {
+      console.error("アカウント情報の取得に失敗:", err);
+    });
+    }, []);
+
+
 
   return (
     <div className="flex justify-center">
