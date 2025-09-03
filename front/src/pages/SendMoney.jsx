@@ -90,6 +90,8 @@ function SendMoney() {
     }
   };
 
+  const isOverLimit = amount !== "" && Number(amount) > balance;
+
   return (
     <>
       <Header title="送金" />
@@ -127,6 +129,17 @@ function SendMoney() {
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm md:text-base">円</span>
             </div>
           </div>
+
+          {isOverLimit && (
+            <div className="relative mt-2 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg shadow-sm flex items-center space-x-2 animate-fadeIn animate-bounce-once">
+              <svg className="h-5 w-5 flex-shrink-0 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-12a1 1 0 102 0V7a1 1 0 10-2 0v-1zm1 4a1 1 0 100 2h.01a1 1 0 100-2H10z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm font-medium">
+                送金上限額を超過しています
+              </p>
+            </div>
+          )}
 
           {/* メッセージ（任意） */}
           <div className="mt-4">
