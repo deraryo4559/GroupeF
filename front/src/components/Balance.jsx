@@ -23,7 +23,7 @@ const Balance = ({
         <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
 
         {/* コンテンツエリア */}
-        <div className="relative p-6">
+        <div className="relative p-4">
           {/* ヘッダー部分 */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
@@ -68,7 +68,7 @@ const Balance = ({
                 }
               `}
             >
-              {Number(balance).toLocaleString()}
+              {balance.toLocaleString()}
               <span
                 className={`
                   text-lg font-medium ml-1

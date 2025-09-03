@@ -9,35 +9,42 @@ function SendMoney() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  // 残高の状態管理
-  const [balance, setBalance] = useState(50000);
+  const [balance, setBalance] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [message, setMessage] = useState("");
 
-  // ローカルストレージから残高を読み込み
-  useEffect(() => {
-    const savedBalance = localStorage.getItem('userBalance');
-    if (savedBalance) {
-      setBalance(Number(savedBalance));
-    }
-  }, []);
-
-  // ★ 受け取ったユーザー（全データ）。limitを残高と同じに設定
+  // ユーザー情報（location.state から受け取る）
   const user = state?.user ?? {
     id: 0,
     name: "サンプル 氏名",
-    icon: "/images/human1.png",
+    avatar_path: "/images/human1.png",
     email: "",
-    limit: balance, // limitを残高と同じに設定
   };
+
+
+  // 🔹 バックエンドから残高を取得
+  useEffect(() => {
+    if (!user.user_id) return;
+
+    fetch(`http://localhost:5000/api/accounts/52`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("口座情報の取得に失敗しました");
+        }
+        return response.json();
+      })
+      .then(data => {
+        setBalance(data.balance); // DBから取得した残高を反映
+      })
+      .catch(error => {
+        console.error("残高の取得に失敗:", error);
+      });
+  }, [user.id]);
+
 
   // userのlimitも残高と同期
-  const syncedUser = {
-    ...user,
-    limit: balance
-  };
-
-  const [amount, setAmount] = useState("");
-  const [message, setMessage] = useState("");
+  const syncedUser = { ...user, limit: balance };
 
   const isAmountValid =
     amount !== "" &&
@@ -49,18 +56,14 @@ function SendMoney() {
     if (value === "") return setAmount("");
     const num = Number(value);
     if (num < 1) return setAmount("1");
-    // 残高を超える金額でも入力を許可（警告表示のため）
     setAmount(value);
   };
 
-  // 送金ボタンがクリックされたときの処理
   const handleSendMoney = async () => {
     if (!isAmountValid || isProcessing) return;
-
     setIsProcessing(true);
 
     try {
-      // 送金処理のシミュレーション
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       const sendAmount = Number(amount);
@@ -80,7 +83,6 @@ function SendMoney() {
           newBalance: newBalance
         }
       });
-
     } catch (error) {
       alert("送金に失敗しました。もう一度お試しください。");
     } finally {
@@ -88,15 +90,13 @@ function SendMoney() {
     }
   };
 
-
-
   return (
     <>
       <Header title="送金" />
       <div className="flex justify-center h-screen">
         <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col justify-center bg-gray-50">
           {/* 送金先 */}
-          <div className="flex items-start">
+          <div className="flex items-start mt-6">
             <div className="text-sm text-gray-600 leading-6">送金先</div>
             <div className="flex items-center gap-3 mt-4">
               <Icon
