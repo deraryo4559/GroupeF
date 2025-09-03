@@ -2,9 +2,9 @@
 from flask import Blueprint, jsonify, request
 from app.models import account_all as account_model
 
-accounts_bp = Blueprint('accounts_all', __name__)
+accounts_all_bp = Blueprint('accounts_all', __name__)
 
-@accounts_bp.route('/', methods=['GET'])
+@accounts_all_bp.route('/', methods=['GET'])
 def get_account_list():
     """全アカウントリストを返す"""
     exclude_id = request.args.get('exclude_id', type=int)
