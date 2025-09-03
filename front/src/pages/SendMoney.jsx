@@ -211,12 +211,7 @@ function SendMoney() {
             />
           </div>
 
-          {/* デバッグ情報（開発時のみ表示） */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mt-2 p-2 bg-gray-100 text-xs">
-              Debug: user.id={user.id}, user.user_id={user.user_id}, balance={balance}
-            </div>
-          )}
+
 
           {/* 送金ボタン */}
           <div className="mt-6 flex justify-center">
