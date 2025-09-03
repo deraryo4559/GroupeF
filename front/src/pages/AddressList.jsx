@@ -36,8 +36,8 @@ function AddressList() {
   return (
     <>
       <Header title="送金相手を選択" backTo="/" />
-      <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
-        <div className="w-full max-w-md mx-auto">
+      <div className="flex justify-center h-screen">
+        <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
           <ul className="space-y-3 bg-white rounded-xl shadow-sm p-4">
             {users.map((user) => (
               <li
