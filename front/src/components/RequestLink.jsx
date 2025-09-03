@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "./Header";
 
 function RequestLink() {
   const [reqAmount, setReqAmount] = useState("3000");
@@ -26,8 +27,10 @@ function RequestLink() {
   };
 
   return (
-    <div className="w-full max-w-xs md:max-w-md lg:max-w-lg mx-auto p-6 bg-white rounded-xl shadow text-gray-800">
-      <div className="text-sm text-gray-600 leading-6 mb-2">請求リンクの作成</div>
+    <>
+      <Header title="請求リンクの作成" backTo="/" />
+      <div className="w-full max-w-xs md:max-w-md lg:max-w-lg mx-auto p-6 bg-white rounded-xl shadow text-gray-800">
+        <div className="text-sm text-gray-600 leading-6 mb-2">請求リンクの作成</div>
 
       {/* 請求金額 */}
       <div className="mt-2">
@@ -78,6 +81,7 @@ function RequestLink() {
         ← Topに戻る
       </button>
     </div>
+    </>
   );
 }
 
