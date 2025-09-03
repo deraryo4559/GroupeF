@@ -1,10 +1,12 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";  // ★追加
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
+  const navigate = useNavigate();  // ★追加
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,6 +25,9 @@ export default function Login() {
       }
       setStatus("ログイン成功！");
       console.log("ログイン成功:", data.user);
+
+      // ★ Top.jsx に遷移
+      navigate("/", { state: { user: data.user } });
     } catch (err) {
       console.error("通信エラー:", err);
       setStatus("失敗");

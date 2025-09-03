@@ -10,7 +10,11 @@ function AddressList() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/users/')
+    const saved = sessionStorage.getItem("authUser");
+    const me = saved ? JSON.parse(saved) : null;
+    const myId = me?.user_id ?? 52;
+
+    fetch(`http://localhost:5000/api/users?exclude_id=${myId}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('データの取得に失敗しました');
