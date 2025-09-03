@@ -2,82 +2,81 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button1 from '../components/button1';
 import Balance from '../components/Balance';
+
 function SendMoney() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  // 残高の状態管理
-  const [balance, setBalance] = useState(50000);
+  const [balance, setBalance] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  // ローカルストレージから残高を読み込み
-  useEffect(() => {
-    const savedBalance = localStorage.getItem('userBalance');
-    if (savedBalance) {
-      setBalance(Number(savedBalance));
-    }
-  }, []);
-
-  // ★ 受け取ったユーザー（全データ）。limitを残高と同じに設定
-  const user = state?.user ?? {
-    id: 0,
-    name: "サンプル 氏名",
-    icon: "/images/human1.png",
-    email: "",
-    limit: balance, // limitを残高と同じに設定
-  };
-
-  // userのlimitも残高と同期
-  const syncedUser = {
-    ...user,
-    limit: balance
-  };
-
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
 
+  // ユーザー情報（location.state から受け取る）
+  const user = state?.user ?? {
+    id: 0,
+    name: "サンプル 氏名",
+    avatar_path: "/images/human1.png",
+    email: "",
+  };
+
+  // 🔹 バックエンドから残高を取得
+// 🔹 バックエンドから残高を取得
+useEffect(() => {
+  if (!user.user_id) return;
+
+  fetch(`http://localhost:5000/api/accounts/52`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("口座情報の取得に失敗しました");
+      }
+      return response.json();
+    })
+    .then(data => {
+      setBalance(data.balance); // DBから取得した残高を反映
+    })
+    .catch(error => {
+      console.error("残高の取得に失敗:", error);
+    });
+}, [user.id]);
+
+
+  // userのlimitも残高と同期
+  const syncedUser = { ...user, limit: balance };
+
   const isAmountValid =
-    amount !== "" && 
-    Number(amount) >= 1 && 
-    Number(amount) <= balance; // 残高以下であることをチェック
+    amount !== "" && Number(amount) >= 1 && Number(amount) <= balance;
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
     if (value === "") return setAmount("");
     const num = Number(value);
     if (num < 1) return setAmount("1");
-    // 残高を超える金額でも入力を許可（警告表示のため）
     setAmount(value);
   };
 
-  // 送金ボタンがクリックされたときの処理
   const handleSendMoney = async () => {
     if (!isAmountValid || isProcessing) return;
-    
     setIsProcessing(true);
-    
+
     try {
-      // 送金処理のシミュレーション
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
       const sendAmount = Number(amount);
       const newBalance = balance - sendAmount;
-      
-      // 残高をローカルストレージに保存
-      localStorage.setItem('userBalance', newBalance.toString());
+
+      // 🔹 本来はバックエンドに「送金API」を作ってDB更新するべきですが、
+      //    ここではフロント側のstateだけ更新
       setBalance(newBalance);
-      
-      // 送金完了画面に遷移（残高情報も渡す）
-      navigate("/SendMoneyComplete", { 
-        state: { 
-          user: syncedUser, 
-          amount, 
+
+      navigate("/SendMoneyComplete", {
+        state: {
+          user: syncedUser,
+          amount,
           message,
           previousBalance: balance,
           newBalance: newBalance
-        } 
+        }
       });
-      
     } catch (error) {
       alert("送金に失敗しました。もう一度お試しください。");
     } finally {
@@ -85,7 +84,6 @@ function SendMoney() {
     }
   };
 
-  // 請求ボタンがクリックされたときの処理
   const handleRequestMoney = () => {
     navigate("/request", { state: { user: syncedUser } });
   };
@@ -115,19 +113,17 @@ function SendMoney() {
               className="w-12 h-12 object-cover rounded-full"
             />
           </div>
-          {/* ★ 選択した相手の名前を表示 */}
           <div className="text-[15px] md:text-base font-medium tracking-wide">
             {user.name}
           </div>
         </div>
       </div>
 
-           {/* 送金上限額 */}
+      {/* 送金上限額 */}
       <Balance balance={balance} label="送金上限額" />
 
       {/* 現在の残高 */}
       <Balance balance={balance} label="現在の残高" highlight />
-
 
       {/* 送金金額 */}
       <div className="mt-6">
@@ -146,8 +142,7 @@ function SendMoney() {
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm md:text-base">円</span>
         </div>
-        
-        {/* 残高不足の警告文 */}
+
         {amount !== "" && Number(amount) > balance && (
           <div className="mt-2 p-3 bg-red-100 border border-red-300 rounded-lg">
             <p className="text-sm text-red-600">
@@ -180,7 +175,6 @@ function SendMoney() {
           {isProcessing ? "送金中..." : "送金"}
         </Button1>
       </div>
-
     </div>
   );
 }
