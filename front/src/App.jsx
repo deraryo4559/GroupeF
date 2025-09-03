@@ -10,6 +10,7 @@ import BillingStatus from './pages/BillingStatus';
 import Payment from './pages/Payment';
 import PaymentComplete from './pages/PaymentComplete';
 import Login from './pages/Login';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/billing-status" element={<BillingStatus />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment/complete" element={<PaymentComplete />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </Router>
