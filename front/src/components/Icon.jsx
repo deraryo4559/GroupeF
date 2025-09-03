@@ -12,7 +12,7 @@ const Icon = (props) => {
                     className="h-16 w-16 rounded-full object-cover flex-shrink-0" />
             </div>
             <div className="flex justify-center items-center">
-                <p className="text-xl">
+                <p className="text-gray-900 text-xl font-bold leading-tight">
                     {name}
                 </p>
             </div>
