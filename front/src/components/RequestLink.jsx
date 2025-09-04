@@ -14,20 +14,20 @@ function RequestLink() {
   const navigate = useNavigate();
 
   // 現在の日付と時間を設定
-useEffect(() => {
-  const now = new Date();
-  const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-  const timeOptions = { hour: '2-digit', minute: '2-digit' };
-  setCurrentDate(now.toLocaleDateString('ja-JP', dateOptions));
-  setCurrentTime(now.toLocaleTimeString('ja-JP', timeOptions));
+  useEffect(() => {
+    const now = new Date();
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    setCurrentDate(now.toLocaleDateString('ja-JP', dateOptions));
+    setCurrentTime(now.toLocaleTimeString('ja-JP', timeOptions));
 
-  // sessionStorage からログインユーザーを取得
-  const saved = sessionStorage.getItem("authUser");
-  const me = saved ? JSON.parse(saved) : null;
-  if (me) {
-    setUserName(me.name); // ← サーバーにあるユーザー名を表示
-  }
-}, []);
+    // sessionStorage からログインユーザーを取得
+    const saved = sessionStorage.getItem("authUser");
+    const me = saved ? JSON.parse(saved) : null;
+    if (me) {
+      setUserName(me.name); // ← サーバーにあるユーザー名を表示
+    }
+  }, []);
 
 
   // 金額入力の処理 - カンマ区切り対応版
@@ -175,14 +175,13 @@ useEffect(() => {
           </div>
         </main>
 
-        {/* フッター（ボタン） */}
-        <footer className="p-4 bg-white border-t border-gray-200 sticky bottom-0 left-0 right-0">
+        <footer className="p-6 pt-2 pb-6 border-gray-200 mt-auto">
           <Button1
             variant="danger"
-            size="large"
+            size="medium"
             onClick={handleCreate}
             disabled={!canCreate}
-            className="w-full h-14 rounded-full flex items-center justify-center font-bold tracking-wide"
+            className="w-full"
           >
             リンクを生成
           </Button1>
