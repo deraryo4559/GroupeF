@@ -38,10 +38,12 @@ function AddressList() {
 
   return (
     // 修正点1: h-scree -> h-screen に修正
-    <div className="flex flex-col h-screen">
-      <Header title="送金相手を選択" backTo="/" />
+
+    <div className="">
+
       {/* スクロール可能なコンテンツエリア */}
-      <div className="flex-grow overflow-y-auto">
+      <div className="flex-grow overflow-y-auto ">
+        <Header title="送金相手を選択" backTo="/" />
         <div className="flex justify-center">
           <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
             <ul className="divide-y divide-gray-200 my-4 rounded-xl shadow-sm overflow-hidden bg-white">
