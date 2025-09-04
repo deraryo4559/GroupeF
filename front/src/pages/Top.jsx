@@ -140,6 +140,14 @@ const Top = () => {
                                 textColor="text-gray-600"
                                 onClick={() => window.location.href = '/TransactionsList'}
                             />
+
+                            <MenuIconButton
+                                label="ヘルプ"
+                                icon={<ProfileIcon />}
+                                bgColor="bg-gray-200"
+                                textColor="text-gray-600"
+                                onClick={() => navigate('/help')}
+                            />
                         </section>
 
                         {/* ログアウトボタン */}
