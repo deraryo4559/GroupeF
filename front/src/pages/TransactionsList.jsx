@@ -263,13 +263,6 @@ const TransactionsList = () => {
                 )}
               </div>
             </section>
-
-            {/* 戻る */}
-            <div className="mt-2">
-              <Button1 onClick={() => navigate('/')} variant="primary" className="w-full bg-red-500 text-white hover:bg-red-600">
-                ホームに戻る
-              </Button1>
-            </div>
           </div>
         </div>
       </div>

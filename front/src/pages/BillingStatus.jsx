@@ -103,7 +103,7 @@ const BillingStatus = () => {
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-white">
-      <Header title="請求ステータス" backTo="/" />
+      <Header title="請求履歴" backTo="/" />
 
       <div className="flex justify-center h-[calc(100vh-56px)] overflow-hidden">
         <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col bg-gray-50">
@@ -163,17 +163,6 @@ const BillingStatus = () => {
                 )}
               </div>
             </section>
-
-            {/* 戻る */}
-            <div className="mt-6">
-              <Button1
-                onClick={() => navigate('/')}
-                variant="primary"
-                className="w-full bg-red-500 text-white hover:bg-red-600"
-              >
-                ホームに戻る
-              </Button1>
-            </div>
           </div>
         </div>
       </div>

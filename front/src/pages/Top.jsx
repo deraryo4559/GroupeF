@@ -112,7 +112,7 @@ const Top = () => {
                             />
 
                             <MenuIconButton
-                                label="請求ステータス"
+                                label="請求履歴"
                                 icon={<ReceiptIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
