@@ -33,21 +33,19 @@ const faqs = [
 
 export default function Help() {
   const navigate = useNavigate();
-
   const goto = (path) => () => navigate(path);
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-white">
-      {/* Top.jsx と同じヘッダー（高さ56px想定） */}
+      {/* ヘッダー */}
       <Header title="ヘルプ" backTo="/" />
 
-      {/* Top.jsx と同スケールのレイアウト＆幅 */}
       <div className="flex justify-center h-[calc(100vh-56px)] overflow-hidden">
         <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col bg-gray-50">
           <div className="space-y-4 overflow-auto">
-            {/* ステータスカード風セクション */}
+            {/* FAQ */}
             <section className="bg-white rounded-2xl shadow-sm p-6">
-              <h1 className="text-xl sm:text-2xl font-semibold mb-2">よくある質問</h1>
+              <h1 className="text-xl sm:text-2xl font-semibold mb-2 text-red-600">よくある質問</h1>
               <p className="text-sm text-gray-600 mb-4">
                 送金アプリの使い方やトラブル時の対処をまとめました。
               </p>
@@ -69,9 +67,9 @@ export default function Help() {
               </ul>
             </section>
 
-            {/* クイックアクセス（Top.jsx のメニューに寄せてボタン配置） */}
+            {/* クイックアクセス */}
             <section className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-3">クイックアクセス</h2>
+              <h2 className="text-lg font-semibold mb-3 text-red-600">クイックアクセス</h2>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={goto('/step3')}
@@ -97,12 +95,19 @@ export default function Help() {
                 >
                   取引履歴
                 </button>
+                {/* SupportAI への遷移追加 */}
+                <button
+                  onClick={goto('/support-ai')}
+                  className="col-span-2 py-3 px-4 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition"
+                >
+                  AIサポートに質問する
+                </button>
               </div>
             </section>
 
             {/* トラブルシューティング */}
             <section className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-3">トラブルシューティング</h2>
+              <h2 className="text-lg font-semibold mb-3 text-red-600">トラブルシューティング</h2>
               <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-700">
                 <li>ページを再読み込み（Ctrl/⌘ + R）。</li>
                 <li>ネットワーク接続を確認（Wi-Fi/モバイルデータ）。</li>
@@ -112,15 +117,15 @@ export default function Help() {
               </ol>
             </section>
 
-            {/* サポート/問い合わせ */}
+            {/* サポート */}
             <section className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-3">サポート</h2>
+              <h2 className="text-lg font-semibold mb-3 text-red-600">サポート</h2>
               <div className="text-sm text-gray-700 space-y-2">
                 <p>
                   メール:&nbsp;
                   <a
                     href="mailto:support@example.com?subject=%E9%80%81%E9%87%91%E3%82%A2%E3%83%97%E3%83%AA%E3%81%AE%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"
-                    className="underline underline-offset-2"
+                    className="underline underline-offset-2 text-red-600"
                   >
                     support@example.com
                   </a>
@@ -129,13 +134,15 @@ export default function Help() {
               </div>
 
               <div className="mt-4">
-                <Button1 navigateTo="/" className="w-full">ホームへ戻る</Button1>
+                <Button1 navigateTo="/" className="w-full bg-red-500 text-white hover:bg-red-600">
+                  ホームへ戻る
+                </Button1>
               </div>
             </section>
 
-            {/* バージョン情報（任意） */}
+            {/* バージョン情報 */}
             <section className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-2">アプリ情報</h2>
+              <h2 className="text-lg font-semibold mb-2 text-red-600">アプリ情報</h2>
               <p className="text-sm text-gray-600">
                 バージョン: 1.0.0 / 最終更新: 2025-09-03
               </p>
