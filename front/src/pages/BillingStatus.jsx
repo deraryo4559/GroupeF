@@ -12,7 +12,7 @@ const BillingStatus = () => {
   const [error,   setError]   = useState(null);
 
   // ボトムシート制御
-  const [openId, setOpenId] = useState(null);        // 開こうとしている項目ID（= モーダル存在判定）
+  const [openId, setOpenId] = useState(null);          // 開こうとしている項目ID（= モーダル存在判定）
   const [sheetShown, setSheetShown] = useState(false); // スライドアニメ用（trueで表示状態）
   const selected = useMemo(
     () => billingHistory.find(b => b.id === openId) || null,
@@ -24,12 +24,18 @@ const BillingStatus = () => {
     const me = saved ? JSON.parse(saved) : null;
     const requester_user_id = me?.user_id ?? 52;
 
-    fetch(`http://localhost:5000/api/requests/?requester_user_id=${requester_user_id}`)
-      .then(async (res) => {
+    (async () => {
+      setLoading(true);
+      try {
+        // 1) 請求一覧を取得（payment_user_id / token を含むこと）
+        const res = await fetch(`http://localhost:5000/api/requests/?requester_user_id=${requester_user_id}`);
         const data = await res.json().catch(() => null);
         if (!res.ok || !data?.ok) throw new Error(data?.message || `Failed: ${res.status}`);
-        const mapped = (data.items || []).map((r) => ({
+
+        // 2) 一旦マップ（ここでは paidBy を入れず、後で解決）
+        const baseItems = (data.items || []).map((r) => ({
           id: r.id,
+          token: r.token,
           amount: r.amount,
           message: r.message || '',
           createdAt: r.created_at,
@@ -39,17 +45,62 @@ const BillingStatus = () => {
               : r.status === 'canceled'
               ? 'canceled'
               : 'pending',
-          paidBy: r.paid_by || null,
-          link: r.link,
+          paymentUserId: Number(r.payment_user_id || 0),
+          // UI用のリンク（サーバは token を返すだけなので、フロントで構築）
+          link: r.token ? `${window.location.origin}/pay/${r.token}` : null,
+          paidBy: null, // ここは後段で解決
         }));
-        setBillingHistory(mapped);
+
+        // 3) 支払者を解決する必要があるID集合
+        const payerIds = new Set(
+          baseItems
+            .filter(it => it.status === 'paid' && it.paymentUserId > 0)
+            .map(it => it.paymentUserId)
+        );
+
+        let userIndex = {};
+        if (payerIds.size > 0) {
+          // 4) ユーザー一覧を取得して index 化（user_id -> {name, avatar_path}）
+          const ures = await fetch('http://localhost:5000/api/users/');
+          const uarr = await ures.json().catch(() => []);
+          if (Array.isArray(uarr)) {
+            for (const u of uarr) {
+              const uid = Number(u.user_id ?? u.id ?? u.userID);
+              if (!uid) continue;
+              userIndex[uid] = {
+                name: u.name ?? `ユーザー${uid}`,
+                avatar_path: u.avatar_path || '/images/human2.png',
+              };
+            }
+          }
+        }
+
+        // 5) paidBy を埋める
+        const resolved = baseItems.map((it) => {
+          if (it.status === 'paid' && it.paymentUserId > 0) {
+            const info = userIndex[it.paymentUserId];
+            if (info) {
+              return {
+                ...it,
+                paidBy: {
+                  id: it.paymentUserId,
+                  name: info.name,
+                  icon: info.avatar_path,
+                },
+              };
+            }
+          }
+          return it;
+        });
+
+        setBillingHistory(resolved);
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error('請求一覧の取得に失敗:', err);
         setError('請求一覧の取得に失敗しました');
         setLoading(false);
-      });
+      }
+    })();
   }, []);
 
   const formatDate = (dateString) => {
@@ -140,6 +191,17 @@ const BillingStatus = () => {
                                 {Number(b.amount).toLocaleString()}<span className="text-base ml-0.5">円</span>
                               </div>
                               <div className="text-xs text-gray-500 mt-1">{formatDate(b.createdAt)}</div>
+                              {/* 支払者のスニペット（支払い済みのみ） */}
+                              {b.status === 'paid' && b.paidBy && (
+                                <div className="mt-1 text-[12px] text-gray-700 flex items-center gap-2">
+                                  <img
+                                    src={b.paidBy.icon || '/images/human2.png'}
+                                    alt=""
+                                    className="w-4 h-4 rounded-full object-cover"
+                                  />
+                                  <span>支払者：{b.paidBy.name}</span>
+                                </div>
+                              )}
                             </div>
                             <div className="flex flex-col items-end gap-2">
                               <span className={`text-[11px] px-2 py-0.5 rounded-full ${badge.bg} ${badge.text} ring-1 ${badge.ring}`}>
@@ -234,7 +296,8 @@ const BillingStatus = () => {
                   </div>
                 </div>
 
-                {selected.paidBy && (
+                {/* 支払者の詳細（支払い済みの場合のみ） */}
+                {selected.status === 'paid' && selected.paidBy && (
                   <div className="rounded-xl bg-white border border-emerald-100 p-3">
                     <div className="text-[11px] text-emerald-700 mb-1">支払者</div>
                     <div className="flex items-center gap-2">
