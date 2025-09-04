@@ -170,14 +170,14 @@ function PaymentRequest() {
     return (
         <>
             <Header title="支払い" backTo="/" />
-            <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
-                <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-xl font-bold text-center text-gray-800 mb-6">
-                        支払いリクエスト
+            <div className="flex justify-center h-screen">
+                <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
+                    <h2 className="text-xl font-bold text-center text-gray-800 mt-6 border-b border-gray-400 pb-4">
+                        請求者
                     </h2>
 
                     {/* 請求元ユーザー表示 */}
-                    <div className="mb-6">
+                    <div className="mt-2 mb-2">
                         <Icon
                             img={paymentRequest.requester_avatar || "/images/human1.png"}
                             name={paymentRequest.requester_name || "ユーザー"}
@@ -185,8 +185,8 @@ function PaymentRequest() {
                     </div>
 
                     {/* 残高表示 */}
-                    <div className="relative">
-                        <Balance balance={currentBalance} label="現在の残高" highlight />
+                    <div className="relative mb-4">
+                        <Balance balance={currentBalance} label="あなたの残高" highlight />
                         {currentBalance === 0 && (
                             <div className="absolute right-0 top-0 bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded">
                                 残高情報の取得に失敗した可能性があります
