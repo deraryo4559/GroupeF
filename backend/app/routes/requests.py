@@ -20,6 +20,7 @@ def create_request():
     """
     data = request.get_json(silent=True) or {}
     requester_user_id = int(data.get("requester_user_id") or 0)
+    payment_user_id = 0
     amount = int(data.get("amount") or 0)
     message = (data.get("message") or "").strip()
 
@@ -33,12 +34,13 @@ def create_request():
 
     conn = sqlite3.connect(_db_path())
     conn.row_factory = sqlite3.Row
+
     try:
         cur = conn.cursor()
         cur.execute("""
-            INSERT INTO payment_requests (token, requester_user_id, amount, message)
-            VALUES (?, ?, ?, ?)
-        """, (token, requester_user_id, amount, message))
+            INSERT INTO payment_requests (token, requester_user_id, payment_user_id, amount, message)
+            VALUES (?, ?, ?, ?, ?)
+        """, (token, requester_user_id, payment_user_id, amount, message))
         conn.commit()
 
         row = cur.execute(
@@ -46,16 +48,13 @@ def create_request():
             (token,)
         ).fetchone()
 
-        # フロントで利用するリンク - ポート3000のフロントエンドURL
-        # 注: host_urlはFlaskサーバーのURL（localhost:5000）なので、ここでは単にtokenのみを返す
-        # フロントエンド側でフルURLを構築する
-
         return jsonify({
             "ok": True,
             "request": {
                 "id": row["id"],
                 "token": row["token"],
                 "requester_user_id": row["requester_user_id"],
+                "payment_user_id": row["payment_user_id"],
                 "amount": row["amount"],
                 "message": row["message"],
                 "status": row["status"],
@@ -81,7 +80,7 @@ def list_requests():
     conn.row_factory = sqlite3.Row
     try:
         rows = conn.execute("""
-            SELECT id, token, requester_user_id, amount, message, status, created_at
+            SELECT id, token, requester_user_id, payment_user_id, amount, message, status, created_at
             FROM payment_requests
             WHERE requester_user_id = ?
             ORDER BY id DESC
@@ -93,6 +92,7 @@ def list_requests():
                 "id": r["id"],
                 "token": r["token"],
                 "requester_user_id": r["requester_user_id"],
+                "payment_user_id": r["payment_user_id"],
                 "amount": r["amount"],
                 "message": r["message"],
                 "status": r["status"],
@@ -101,6 +101,7 @@ def list_requests():
         return jsonify({"ok": True, "items": items})
     finally:
         conn.close()
+
 
 # --- 請求キャンセルAPI ---
 @requests_bp.route("/<int:request_id>/cancel", methods=["POST", "OPTIONS"])
@@ -136,10 +137,13 @@ def cancel_request(request_id):
                 "message": row["message"],
                 "amount": row["amount"],
                 "created_at": row["created_at"],
+                "payment_user_id": row["payment_user_id"],
             }
         })
     finally:
         conn.close()
+
+
 # --- トークンから請求情報を取得するAPI ---
 @requests_bp.route("/<token>", methods=["GET"])
 @cross_origin()
@@ -154,7 +158,7 @@ def get_request_by_token(token):
     conn = sqlite3.connect(_db_path())
     conn.row_factory = sqlite3.Row
     try:
-        # 請求情報を取得
+        # 請求情報を取得（請求者の基本情報もJOIN）
         row = conn.execute("""
             SELECT r.*, u.name as requester_name, u.avatar_path as requester_avatar
             FROM payment_requests r
@@ -169,6 +173,7 @@ def get_request_by_token(token):
             "id": row["id"],
             "token": row["token"],
             "requester_user_id": row["requester_user_id"],
+            "payment_user_id": row["payment_user_id"],
             "requester_name": row["requester_name"],
             "requester_avatar": row["requester_avatar"],
             "amount": row["amount"],
@@ -207,7 +212,7 @@ def pay_request(token):
         # トランザクション開始
         conn.execute("BEGIN TRANSACTION")
         
-        # 請求情報を取得
+        # 請求情報を取得（未処理のみ）
         request_row = conn.execute("""
             SELECT * FROM payment_requests
             WHERE token = ? AND status = 'pending'
@@ -253,10 +258,13 @@ def pay_request(token):
             UPDATE accounts SET balance = balance + ? WHERE user_id = ?
         """, (request_row["amount"], request_row["requester_user_id"]))
         
-        # 3. 請求のステータスを更新
+        # 3. 請求のステータス/支払い者IDを更新（★ここが今回の肝）
         conn.execute("""
-            UPDATE payment_requests SET status = 'success' WHERE token = ?
-        """, (token,))
+            UPDATE payment_requests
+            SET status = 'success',
+                payment_user_id = ?
+            WHERE token = ?
+        """, (paid_by_id, token))
         
         # 変更を確定
         conn.commit()
@@ -269,7 +277,8 @@ def pay_request(token):
         return jsonify({
             "ok": True, 
             "message": "支払いが完了しました", 
-            "new_balance": new_balance
+            "new_balance": new_balance,
+            "payment_user_id": paid_by_id
         })
     
     except Exception as e:

@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS payment_requests (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
     token             TEXT UNIQUE NOT NULL,                 -- 請求リンク識別子
     requester_user_id INTEGER NOT NULL,                     -- users.user_id を参照
+    payment_user_id INTEGER NOT NULL,                     -- users.user_id を参照
     amount            INTEGER NOT NULL CHECK (amount BETWEEN 1 AND 50000),
     message           TEXT,
     status            TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','success','canceled')),
@@ -76,6 +77,14 @@ CREATE TABLE IF NOT EXISTS transactions (
 """
 cursor.execute(create_transactions_table_sql)
 print("'transactions' テーブルが正常に作成されました。")
+
+# --- 5. transactions テーブルを作成するSQL文 ---
+create_payment_requests_column_sql = """
+    ALTER TABLE payment_requests ADD COLUMN payment_user_id INTEGER;
+"""
+cursor.execute(create_payment_requests_column_sql)
+print("payment_requests_columnが正常に作成されました。")
+
 
 # データベースへの変更を確定（保存）します
 connection.commit()
