@@ -120,14 +120,6 @@ const Top = () => {
                             />
 
                             <MenuIconButton
-                                label="プロフィール"
-                                icon={<ProfileIcon />}
-                                bgColor="bg-gray-200"
-                                textColor="text-gray-600"
-                                onClick={() => navigate('/profile')}
-                            />
-
-                            <MenuIconButton
                                 label="取引履歴"
                                 icon={<HistoryIcon />}
                                 bgColor="bg-gray-200"
