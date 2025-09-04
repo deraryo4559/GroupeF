@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import BalanceCard from '../components/BalanceCard';
 import MenuIconButton from '../components/MenuIconButton';
 import UserInfoCard from '../components/UserInfoCard';
-import { SendIcon, RequestIcon, StatusIcon, ProfileIcon, ReceiptIcon } from '../components/MenuIcons';
+import { SendIcon, RequestIcon, StatusIcon, ProfileIcon, ReceiptIcon, HistoryIcon, HelpIcon } from '../components/MenuIcons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Top = () => {
@@ -129,7 +129,7 @@ const Top = () => {
 
                             <MenuIconButton
                                 label="取引履歴"
-                                icon={<ProfileIcon />}
+                                icon={<HistoryIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
                                 onClick={() => window.location.href = '/TransactionsList'}
@@ -137,7 +137,7 @@ const Top = () => {
 
                             <MenuIconButton
                                 label="ヘルプ"
-                                icon={<ProfileIcon />}
+                                icon={<HelpIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
                                 onClick={() => navigate('/help')}

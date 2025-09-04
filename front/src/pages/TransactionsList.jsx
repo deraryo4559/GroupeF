@@ -15,9 +15,10 @@ const TransactionsList = () => {
   const [error,   setError]             = useState(null);
 
   // 口座ID -> { name, avatar_path } の簡易キャッシュ
-  const [people, setPeople]     = useState({});
-  const [accIndex, setAccIndex] = useState(null); // { [account_id]: user_id }
-  const [userIndex, setUserIndex] = useState(null); // { [user_id]: {name, avatar_path} }
+  // ※ 索引は「すべて文字列キー」で統一
+  const [people, setPeople]       = useState({});
+  const [accIndex, setAccIndex]   = useState(null); // { [account_id:str]: user_id:str }
+  const [userIndex, setUserIndex] = useState(null); // { [user_id:str]: { name, avatar_path } }
 
   useEffect(() => {
     const saved = sessionStorage.getItem('authUser');
@@ -28,13 +29,15 @@ const TransactionsList = () => {
       try {
         const r = await fetch(`http://localhost:5000/api/accounts/${userId}`);
         const j = await r.json().catch(() => null);
-        if (r.ok && j && typeof j.id !== 'undefined') return Number(j.id);
+        if (r.ok && j && (j.id ?? j.account_id)) return Number(j.id ?? j.account_id);
       } catch {}
       try {
         const r2 = await fetch('http://localhost:5000/api/accounts_all/');
         const arr = await r2.json().catch(() => []);
-        const meAcc = Array.isArray(arr) ? arr.find(a => Number(a.user_id) === userId) : null;
-        if (meAcc) return Number(meAcc.id);
+        const meAcc = Array.isArray(arr)
+          ? arr.find(a => Number(a.user_id ?? a.owner_user_id ?? a.userId) === userId)
+          : null;
+        if (meAcc) return Number(meAcc.id ?? meAcc.account_id);
       } catch {}
       return null;
     };
@@ -49,7 +52,7 @@ const TransactionsList = () => {
     (async () => {
       try {
         const [accId, items] = await Promise.all([fetchMyAccount(), fetchTx()]);
-        setMyAccountId(accId);
+        setMyAccountId(accId !== null ? Number(accId) : null);
         setTransactions(items);
         setLoading(false);
       } catch (e) {
@@ -60,52 +63,92 @@ const TransactionsList = () => {
     })();
   }, []);
 
+  // 自分以外の相手口座ID集合（Number で持ってOK）
   const counterpartyIds = useMemo(() => {
     if (!myAccountId) return new Set();
     const set = new Set();
     for (const tx of transactions) {
       if (tx.transaction_type !== 'transfer') continue;
-      const isSender = tx.sender_account_id === myAccountId;
-      const isReceiver = tx.receiver_account_id === myAccountId;
-      if (isSender) set.add(tx.receiver_account_id);
-      else if (isReceiver) set.add(tx.sender_account_id);
+      const isSender   = Number(tx.sender_account_id)   === Number(myAccountId);
+      const isReceiver = Number(tx.receiver_account_id) === Number(myAccountId);
+      if (isSender)   set.add(Number(tx.receiver_account_id));
+      if (isReceiver) set.add(Number(tx.sender_account_id));
     }
     return set;
   }, [transactions, myAccountId]);
 
+  // 相手口座ID -> ユーザー名 を解決
   useEffect(() => {
     const unresolved = [...counterpartyIds].filter((id) => !people[id]);
     if (unresolved.length === 0) return;
 
     (async () => {
       try {
-        let accIdx = accIndex;
-        let usrIdx = userIndex;
+        let aIdx = accIndex; // 口座ID(String) -> ユーザーID(String)
+        let uIdx = userIndex; // ユーザーID(String) -> 情報
 
-        if (!accIdx) {
+        // /accounts_all → aIdx
+        if (!aIdx) {
           const r = await fetch('http://localhost:5000/api/accounts_all/');
           const arr = await r.json().catch(() => []);
-          accIdx = {};
-          for (const a of arr) accIdx[a.id] = a.user_id;
-          setAccIndex(accIdx);
-        }
-        if (!usrIdx) {
-          const r = await fetch('http://localhost:5000/api/users/');
-          const arr = await r.json().catch(() => []);
-          usrIdx = {};
-          for (const u of arr) usrIdx[u.user_id] = {
-            name: u.name,
-            avatar_path: u.avatar_path || '/images/human2.png'
-          };
-          setUserIndex(usrIdx);
+          console.log('DEBUG /accounts_all:', arr);
+          aIdx = {};
+          for (const a of (Array.isArray(arr) ? arr : [])) {
+            const aid = String(a.id ?? a.account_id ?? a.accountId ?? a.accountID);
+            const uid = String(a.user_id ?? a.owner_user_id ?? a.userId ?? a.userID);
+            if (aid && uid && aid !== 'undefined' && uid !== 'undefined') {
+              aIdx[aid] = uid; // 文字列キーで統一
+            }
+          }
+          setAccIndex(aIdx);
         }
 
-        const next = {};
-        for (const accId of unresolved) {
-          const uid = accIdx[accId];
-          const info = uid ? usrIdx[uid] : null;
-          next[accId] = info || { name: `口座ID: ${accId}`, avatar_path: '/images/human2.png' };
+        // /users → uIdx
+        if (!uIdx) {
+          const r = await fetch('http://localhost:5000/api/users/');
+          const arr = await r.json().catch(() => []);
+          console.log('DEBUG /users:', arr);
+          uIdx = {};
+          for (const u of (Array.isArray(arr) ? arr : [])) {
+            const uid = String(u.user_id ?? u.id ?? u.userID);
+            if (!uid || uid === 'undefined') continue;
+            uIdx[uid] = {
+              name: u.name ?? u.display_name ?? `ユーザー${uid}`,
+              avatar_path: u.avatar_path || '/images/human2.png',
+            };
+          }
+          setUserIndex(uIdx);
         }
+
+        // マッピング（フォールバック込み）
+        const next = {};
+        const aKeys = Object.keys(aIdx || {});
+        const uKeys = Object.keys(uIdx || {});
+        console.log('DEBUG idx keys', { aIdxKeys: aKeys, uIdxKeys: uKeys, unresolved: [...unresolved] });
+
+        for (const raw of unresolved) {
+          // まずは文字列キーで参照
+          const accIdStr = String(raw);
+          const uidStr   = aIdx?.[accIdStr];              // 口座ID → ユーザーID（文字列）
+          let info = uidStr ? uIdx?.[uidStr] : null;      // ユーザーID → 情報
+
+          // フォールバック1：accId 自体が user_id だったケース
+          if (!info) {
+            info = uIdx?.[accIdStr] || null;
+          }
+
+          // フォールバック2：数値化→再参照（混在対策）
+          if (!info) {
+            const accIdNum = Number(raw);
+            const uidNum   = aIdx?.[String(accIdNum)];
+            info = (uidNum && uIdx?.[String(uidNum)]) || uIdx?.[String(accIdNum)] || null;
+          }
+
+          // 表示用 people は Number キーで格納（既存呼び出し互換）
+          const accIdNumber = Number(raw);
+          next[accIdNumber] = info || { name: '不明なユーザー', avatar_path: '/images/human2.png' };
+        }
+
         setPeople((prev) => ({ ...prev, ...next }));
       } catch (e) {
         console.error('相手情報の解決に失敗:', e);
@@ -116,8 +159,11 @@ const TransactionsList = () => {
   const formatDate = (s) => {
     const d = new Date(s);
     return new Intl.DateTimeFormat('ja-JP', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
     }).format(d);
   };
 
@@ -128,8 +174,8 @@ const TransactionsList = () => {
       return { label: '出金', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' };
 
     const done = tx.status === 'completed';
-    const iAmSender   = myAccountId && tx.sender_account_id   === myAccountId;
-    const iAmReceiver = myAccountId && tx.receiver_account_id === myAccountId;
+    const iAmSender   = Number(myAccountId) && Number(tx.sender_account_id)   === Number(myAccountId);
+    const iAmReceiver = Number(myAccountId) && Number(tx.receiver_account_id) === Number(myAccountId);
 
     if (iAmSender)
       return { label: done ? '送金済み' : '送金中', bgColor: done ? 'bg-blue-100' : 'bg-gray-100', textColor: done ? 'text-blue-800' : 'text-gray-800' };
@@ -140,13 +186,18 @@ const TransactionsList = () => {
 
   const counterpartyOf = (tx) => {
     if (tx.transaction_type !== 'transfer' || !myAccountId) return null;
-    const iAmSender   = tx.sender_account_id   === myAccountId;
-    const iAmReceiver = tx.receiver_account_id === myAccountId;
-    const accId = iAmSender ? tx.receiver_account_id
-                : iAmReceiver ? tx.sender_account_id
-                : (tx.receiver_account_id || tx.sender_account_id);
-    const info = people[accId] || { name: `口座ID: ${accId}`, avatar_path: '/images/human2.png' };
+
+    const senderId   = Number(tx.sender_account_id);
+    const receiverId = Number(tx.receiver_account_id);
+    const mine       = Number(myAccountId);
+
+    const iAmSender   = senderId === mine;
+    const iAmReceiver = receiverId === mine;
+
+    const accId = Number(iAmSender ? receiverId : iAmReceiver ? senderId : (receiverId || senderId));
+    const info = people[accId] || { name: '不明なユーザー', avatar_path: '/images/human2.png' };
     const prefix = iAmReceiver ? '送金者：' : iAmSender ? '受取者：' : '相手：';
+
     return { id: accId, name: `${prefix}${info.name}`, icon: info.avatar_path || '/images/human2.png' };
   };
 
