@@ -1,4 +1,3 @@
-// src/pages/AddressList.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon';
@@ -33,25 +32,23 @@ function AddressList() {
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-white">
+    <div className="flex flex-col h-scree">
       <Header title="送金相手を選択" backTo="/" />
-      <div className="flex justify-center h-[calc(100vh-56px)] overflow-hidden">
-        <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col bg-gray-50">
-          <div className="space-y-4 overflow-hidden">
-            <section className="bg-white rounded-xl shadow-sm p-4">
-              <ul className="space-y-3">
-                {users.map((user) => (
-                  <li
-                    key={user.user_id}
-                    className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                    onClick={() => handleSelect(user)}
-                  >
-                    {/* Icon コンポーネント */}
-                    <Icon img={user.avatar_path} name={user.name} />
-                  </li>
-                ))}
-              </ul>
-            </section>
+      {/* スクロール可能なコンテンツエリア */}
+      <div className="flex-grow overflow-y-auto">
+        <div className="flex justify-center h-screen">
+          <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
+            <ul className="divide-y divide-gray-200 my-4 rounded-xl shadow-sm overflow-hidden bg-white">
+              {users.map((user) => (
+                <li
+                  key={user.user_id}
+                  className="hover:bg-red-50 transition-colors cursor-pointer py-3"
+                  onClick={() => handleSelect(user)}
+                >
+                  <Icon img={user.avatar_path} name={user.name} />
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
