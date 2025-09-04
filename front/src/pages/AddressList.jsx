@@ -32,12 +32,13 @@ function AddressList() {
   };
 
   return (
-    <div className="flex flex-col h-scree">
+    // 修正点1: h-scree -> h-screen に修正
+    <div className="flex flex-col h-screen">
       <Header title="送金相手を選択" backTo="/" />
       {/* スクロール可能なコンテンツエリア */}
-      <div className="flex-grow overflow-y-auto">
-        <div className="flex justify-center h-screen">
-          <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
+      <div className="flex-grow overflow-y-auto bg-gray-50"> {/* 背景色をこちらに移動すると良いでしょう */}
+        <div className="flex justify-center"> {/* 修正点2: h-screen を削除 */}
+          <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col">
             <ul className="divide-y divide-gray-200 my-4 rounded-xl shadow-sm overflow-hidden bg-white">
               {users.map((user) => (
                 <li

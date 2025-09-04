@@ -72,83 +72,83 @@ const Top = () => {
   }, []); // loginUser は初期化時に固定しているので依存配列は空で OK
 
 
-    return (
-        <div className="fixed inset-0 overflow-hidden bg-white">
-            {/* ヘッダー */}
-            <Header title="アカウント" showBackButton={false} />
-            <div className="flex justify-center h-[calc(100vh-56px)] overflow-hidden">
-                <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col bg-gray-50">
-                    <div className="space-y-4 overflow-hidden">
-                        {/* ユーザー情報 */}
-                        <UserInfoCard
-                            userName={userName}
-                            userId={userId}
-                            accountNumber={accountNumber}
-                            avatarPath={avatarPath}
-                        />
+  return (
+    <div className="fixed inset-0 overflow-hidden bg-white">
+      {/* ヘッダー */}
+      <Header title="アカウント" showBackButton={false} />
+      <div className="flex justify-center h-[calc(100vh-56px)] overflow-hidden">
+        <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col bg-gray-50">
+          <div className="space-y-4 overflow-hidden">
+            {/* ユーザー情報 */}
+            <UserInfoCard
+              userName={userName}
+              userId={userId}
+              accountNumber={accountNumber}
+              avatarPath={avatarPath}
+            />
 
-                        {/* 残高表示 */}
-                        <BalanceCard
-                            balance={balance} // ローディング中は0を表示
-                            label="残高"
-                        />
+            {/* 残高表示 */}
+            <BalanceCard
+              balance={balance} // ローディング中は0を表示
+              label="残高"
+            />
 
-                        {/* 操作メニュー */}
-                        <section className="grid grid-cols-2 gap-3">
-                            <MenuIconButton
-                                label="送金する"
-                                icon={<SendIcon />}
-                                bgColor="bg-red-100"
-                                textColor="text-red-600"
-                                onClick={() => navigate('/step3')}
-                            />
+            {/* 操作メニュー */}
+            <section className="grid grid-cols-2 gap-3">
+              <MenuIconButton
+                label="送金する"
+                icon={<SendIcon />}
+                bgColor="bg-blue-100"
+                textColor="text-blue-600"
+                onClick={() => navigate('/step3')}
+              />
 
-                            <MenuIconButton
-                                label="請求する"
-                                icon={<RequestIcon />}
-                                bgColor="bg-gray-200"
-                                textColor="text-gray-600"
-                                onClick={() => navigate('/request')}
-                            />
+              <MenuIconButton
+                label="請求する"
+                icon={<RequestIcon />}
+                bgColor="bg-red-100"
+                textColor="text-red-600"
+                onClick={() => navigate('/request')}
+              />
 
-                            <MenuIconButton
-                                label="請求履歴"
-                                icon={<ReceiptIcon />}
-                                bgColor="bg-gray-200"
-                                textColor="text-gray-600"
-                                onClick={() => navigate('/billing-status')}
-                            />
+              <MenuIconButton
+                label="請求履歴"
+                icon={<ReceiptIcon />}
+                bgColor="bg-green-100"
+                textColor="text-green-600"
+                onClick={() => navigate('/billing-status')}
+              />
 
-                            <MenuIconButton
-                                label="取引履歴"
-                                icon={<HistoryIcon />}
-                                bgColor="bg-gray-200"
-                                textColor="text-gray-600"
-                                onClick={() => window.location.href = '/TransactionsList'}
-                            />
+              <MenuIconButton
+                label="取引履歴"
+                icon={<HistoryIcon />}
+                bgColor="bg-yellow-100"
+                textColor="text-yellow-600"
+                onClick={() => window.location.href = '/TransactionsList'}
+              />
 
-                            <MenuIconButton
-                                label="ヘルプ"
-                                icon={<HelpIcon />}
-                                bgColor="bg-gray-200"
-                                textColor="text-gray-600"
-                                onClick={() => navigate('/help')}
-                            />
+              <MenuIconButton
+                label="ヘルプ"
+                icon={<HelpIcon />}
+                bgColor="bg-gray-200"
+                textColor="text-gray-600"
+                onClick={() => navigate('/help')}
+              />
 
-                            <MenuIconButton
-                                label="AIサポート"
-                                icon={<AiIcon />}
-                                bgColor="bg-gray-200"
-                                textColor="text-gray-600"
-                                onClick={() => navigate('/support-ai')}
-                            />
-                        </section>
+              <MenuIconButton
+                label="AIサポート"
+                icon={<AiIcon />}
+                bgColor="bg-gray-200"
+                textColor="text-gray-600"
+                onClick={() => navigate('/support-ai')}
+              />
+            </section>
 
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Top;
