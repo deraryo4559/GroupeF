@@ -7,25 +7,30 @@ function AddressList() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    const saved = sessionStorage.getItem("authUser");
-    const me = saved ? JSON.parse(saved) : null;
-    const myId = me?.user_id ?? 52;
+useEffect(() => {
+  const saved = sessionStorage.getItem("authUser");
+  const me = saved ? JSON.parse(saved) : null;
+  const myId = me?.user_id ?? 52;
 
-    fetch(`http://localhost:5000/api/users?exclude_id=${myId}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('データの取得に失敗しました');
-        }
-        return response.json();
-      })
-      .then(data => {
-        setUsers(data);
-      })
-      .catch(error => {
-        console.error("ユーザーリストの取得に失敗:", error);
-      });
-  }, []);
+  // デバッグ用ログ
+  console.log("認証ユーザー情報:", me);
+  console.log("除外するユーザーID:", myId);
+
+  fetch(`http://localhost:5000/api/users?exclude_id=${myId}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('データの取得に失敗しました');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("取得したユーザーリスト:", data); // デバッグ用
+      setUsers(data);
+    })
+    .catch(error => {
+      console.error("ユーザーリストの取得に失敗:", error);
+    });
+}, []);
 
   const handleSelect = (user) => {
     navigate('/SendMoney', { state: { user } });
