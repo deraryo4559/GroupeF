@@ -12,7 +12,7 @@ const SendMoneyComplete = () => {
 
     return (
         <>
-            <Header title="送金" backTo="/sendMoney" />
+            <Header title="送金" />
             <div className="flex justify-center h-screen">
                 <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col items-center justify-center bg-gray-50">
                     {/* 完了アイコン */}
