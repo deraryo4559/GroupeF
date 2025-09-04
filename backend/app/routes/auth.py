@@ -2,6 +2,11 @@
 from flask import Blueprint, request, jsonify, current_app
 from flask_cors import cross_origin
 import sqlite3, os,hashlib, random, string, datetime
+import random
+
+# ユーザー登録部分
+avatar_number = random.randint(1, 6)  # 1～6 のランダム整数
+avatar_path = f"/images/human{avatar_number}.png"
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -82,7 +87,7 @@ def register():
         cur.execute("""
             INSERT INTO users (name, email, password_hash, phone_number, avatar_path, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (name, email, password_hash, None, "/images/human2.png", now, now))
+        """, (name, email, password_hash, None, avatar_path, now, now))
         user_id = cur.lastrowid
 
         account_number = _generate_account_number()
