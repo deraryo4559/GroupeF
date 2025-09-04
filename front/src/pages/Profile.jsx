@@ -16,6 +16,12 @@ const Profile = () => {
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
+    // ログアウト機能
+    const handleLogout = () => {
+        sessionStorage.removeItem("authUser");
+        navigate("/auth");
+    };
+
 useEffect(() => {
     setIsLoading(true);
 
@@ -159,6 +165,14 @@ useEffect(() => {
                             >
                                 ホームに戻る
                             </Link>
+
+                            {/* ログアウトボタン */}
+                            <button
+                                onClick={handleLogout}
+                                className="w-full py-3 px-4 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium"
+                            >
+                                ログアウト
+                            </button>
                         </section>
 
                     </div>
