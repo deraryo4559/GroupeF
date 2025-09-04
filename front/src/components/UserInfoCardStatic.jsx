@@ -11,8 +11,6 @@ const UserInfoCardStatic = ({ userName, userId, accountNumber, avatarPath }) => 
             </div>
             <div>
                 <p className="text-gray-900 text-xl font-bold leading-tight">{userName}</p>
-                <p className="text-gray-500 text-sm">@user_{userId || "sample"}</p>
-                <p className="text-gray-500 text-sm">口座番号: {accountNumber}</p>
             </div>
         </section>
     );
