@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon';
-import Button1 from '../components/button1';
 import Header from '../components/Header';
 
 function AddressList() {
   const navigate = useNavigate();
-
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -34,25 +32,27 @@ function AddressList() {
   };
 
   return (
-    <>
+    <div className="flex flex-col h-scree">
       <Header title="送金相手を選択" backTo="/" />
-      <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
-        <div className="w-full max-w-md mx-auto">
-          <ul className="space-y-3 bg-white rounded-xl shadow-sm p-4">
-            {users.map((user) => (
-              <li
-                key={user.user_id}
-                className="p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => handleSelect(user)}
-              >
-                {/*Icon コンポーネント*/}
-                <Icon img={user.avatar_path} name={user.name} />
-              </li>
-            ))}
-          </ul>
+      {/* スクロール可能なコンテンツエリア */}
+      <div className="flex-grow overflow-y-auto">
+        <div className="flex justify-center h-screen">
+          <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col bg-gray-50">
+            <ul className="divide-y divide-gray-200 my-4 rounded-xl shadow-sm overflow-hidden bg-white">
+              {users.map((user) => (
+                <li
+                  key={user.user_id}
+                  className="hover:bg-red-50 transition-colors cursor-pointer py-3"
+                  onClick={() => handleSelect(user)}
+                >
+                  <Icon img={user.avatar_path} name={user.name} />
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

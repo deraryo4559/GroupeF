@@ -8,22 +8,31 @@ const PaymentComplete = () => {
 
     return (
         <>
-            <Header title="支払い完了" backTo="/payment" />
-            <div className="min-h-screen pt-20 px-4 pb-8 bg-gray-50">
-                <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-sm p-6">
+            <Header title="支払い" backTo="/payment" />
+            <div className="flex justify-center h-screen">
+                <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col items-center justify-center bg-gray-50">
                     {/* 完了アイコン */}
-                    <div className="mb-6 flex justify-center">
-                        <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                            <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    <div className="h-[25%] mb-6 flex justify-center items-center">
+                        {/* アイコン全体のサイズはここで調整 (例: w-28 h-28) */}
+                        <div className="w-40 h-40">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                {/* 背景の円 (緑色) */}
+                                <circle cx="12" cy="12" r="11" className="fill-green-500" />
+                                {/* チェックマークの線 (白色) */}
+                                <path
+                                    d="M7 13l3 3 7-7"
+                                    className="stroke-white"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
                             </svg>
                         </div>
                     </div>
-
                     {/* 完了メッセージ */}
-                    <h1 className="text-xl font-bold text-center mb-3">支払い完了</h1>
+                    <h1 className="text-xl font-bold text-center mb-3">完了</h1>
                     <p className="text-gray-600 text-center mb-8">
-                        支払いが正常に完了しました
+                        送金処理が正常に行われました
                     </p>
 
                     {/* ホームに戻る */}
