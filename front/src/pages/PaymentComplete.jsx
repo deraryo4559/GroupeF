@@ -6,51 +6,43 @@ import Header from '../components/Header';
 const PaymentComplete = () => {
   const navigate = useNavigate();
 
-  return (
-    <div className="fixed inset-0 overflow-hidden bg-white">
-      <Header title="支払い完了" backTo="/payment" />
-      <div className="flex justify-center h-[calc(100vh-56px)] overflow-hidden">
-        <div className="min-w-[300px] w-full max-w-sm p-6 flex flex-col bg-gray-50">
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            {/* 完了アイコン */}
-            <div className="mb-6 flex justify-center">
-              <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                <svg
-                  className="w-10 h-10 text-green-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
+    return (
+        <>
+            <Header title="支払い" backTo="/payment" />
+            <div className="flex justify-center h-screen">
+                <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col items-center justify-center bg-gray-50">
+                    {/* 完了アイコン */}
+                    <div className="h-[25%] mb-6 flex justify-center items-center">
+                        {/* アイコン全体のサイズはここで調整 (例: w-28 h-28) */}
+                        <div className="w-40 h-40">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                {/* 背景の円 (緑色) */}
+                                <circle cx="12" cy="12" r="11" className="fill-green-500" />
+                                {/* チェックマークの線 (白色) */}
+                                <path
+                                    d="M7 13l3 3 7-7"
+                                    className="stroke-white"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                    {/* 完了メッセージ */}
+                    <h1 className="text-xl font-bold text-center mb-3">完了</h1>
+                    <p className="text-gray-600 text-center mb-8">
+                        送金処理が正常に行われました
+                    </p>
 
-            {/* 完了メッセージ */}
-            <h1 className="text-xl sm:text-2xl font-semibold text-center mb-2">支払い完了</h1>
-            <p className="text-gray-600 text-center mb-6">
-              支払いが正常に完了しました。
-            </p>
-
-            {/* ホームに戻る */}
-            <div className="space-y-3">
-              <Button1 navigateTo="/" className="w-full">
-                ホームに戻る
-              </Button1>
-              <button
-                type="button"
-                onClick={() => navigate('/TransactionsList')}
-                className="w-full py-3 px-4 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-gray-800 font-medium"
-              >
-                取引履歴を確認
-              </button>
+                    {/* ホームに戻る */}
+                    <Button1 navigateTo="/" className="w-full">
+                        ホームに戻る
+                    </Button1>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+        </>
+    );
 };
 
 export default PaymentComplete;

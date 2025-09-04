@@ -6,7 +6,6 @@ import Header from '../components/Header';
 
 function AddressList() {
   const navigate = useNavigate();
-
   const [users, setUsers] = useState([]);
 
   useEffect(() => {

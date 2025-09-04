@@ -16,14 +16,15 @@ const Top = () => {
   const saved = sessionStorage.getItem("authUser");
   const savedUser = saved ? JSON.parse(saved) : null;
 
-  // 🔹 location.state にユーザーがあれば上書き
-  const loginUser = location.state?.user || savedUser;
+  // 🔹 location.state にユーザーがあれば上書き、初期化時に固定
+  const [loginUser] = useState(() => location.state?.user || savedUser);
 
+  // 🔹 sessionStorage 書き込みも初回だけ
   useEffect(() => {
     if (loginUser) {
       sessionStorage.setItem("authUser", JSON.stringify(loginUser));
     }
-  }, [loginUser]);
+  }, []); // 空配列で一度だけ
 
   // ログアウト機能
   const handleLogout = () => {
@@ -74,7 +75,7 @@ const Top = () => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [loginUser]);
+  }, []); // loginUser は初期化時に固定しているので依存配列は空で OK
 
 
     return (
