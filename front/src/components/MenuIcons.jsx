@@ -4,7 +4,7 @@ import React from 'react';
  * メニューで使用する各種アイコン
  */
 export const SendIcon = () => (
-    <svg fill="currentColor" height="20" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+    <svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
         <path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L192.69,140H40a8,8,0,0,1,0-16H192.69L138.34,69.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path>
     </svg>
 );
