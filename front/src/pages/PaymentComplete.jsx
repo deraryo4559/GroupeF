@@ -8,7 +8,7 @@ const PaymentComplete = () => {
 
     return (
         <>
-            <Header title="支払い" backTo="/payment" />
+            <Header title="支払い" />
             <div className="flex justify-center h-screen">
                 <div className="min-w-[300px] w-full max-w-sm pl-6 pr-6 flex flex-col items-center justify-center bg-gray-50">
                     {/* 完了アイコン */}
