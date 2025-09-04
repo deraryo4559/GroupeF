@@ -28,10 +28,10 @@ export default function SignUp() {
         // 注：バックエンドに新規登録APIがまだ実装されていないため、モック処理
         try {
             // 実際のAPIが実装されたらこのURLを変更
-            const res = await fetch("http://localhost:5000/api/auth/mock-login", {
+            const res = await fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ name , email, password }),
             });
 
             // 実際はここでユーザー登録処理を行う

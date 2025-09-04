@@ -96,9 +96,6 @@ export default function Login() {
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  ※ 今は DB の <code>password_hash</code> と完全一致で判定するモックです
-                </p>
               </div>
 
               <div className="mt-6">
