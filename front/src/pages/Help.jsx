@@ -132,20 +132,18 @@ export default function Help() {
                 </p>
                 <p>対応時間: 平日 10:00–18:00（JST）</p>
               </div>
-
-              <div className="mt-4">
-                <Button1 navigateTo="/" className="w-full bg-red-500 text-white hover:bg-red-600">
-                  ホームへ戻る
-                </Button1>
-              </div>
             </section>
 
             {/* バージョン情報 */}
             <section className="bg-white rounded-2xl shadow-sm p-6">
               <h2 className="text-lg font-semibold mb-2 text-red-600">アプリ情報</h2>
-              <p className="text-sm text-gray-600">
-                バージョン: 1.0.0 / 最終更新: 2025-09-03
-              </p>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>バージョン: 1.0.0 / 最終更新: 2025-09-04</p>
+                <p>開発者: <span className="font-medium">SukiyakiBento</span></p>
+                <p className="text-xs text-gray-500 pt-1">
+                  Copyright © 2025 SukiyakiBento. All rights reserved.
+                </p>
+              </div>
             </section>
           </div>
         </div>
