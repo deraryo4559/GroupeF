@@ -26,12 +26,6 @@ const Top = () => {
     }
   }, []); // 空配列で一度だけ
 
-  // ログアウト機能
-  const handleLogout = () => {
-    sessionStorage.removeItem("authUser");
-    navigate("/auth");
-  };
-
   const [userName, setUserName] = useState("読み込み中…");
   const [avatarPath, setAvatarPath] = useState("/images/human1.png");
   const [accountNumber, setAccountNumber] = useState("取得中…");
@@ -142,15 +136,6 @@ const Top = () => {
                             />
                         </section>
 
-                        {/* ログアウトボタン */}
-                        <div className="mt-6">
-                            <button
-                                onClick={handleLogout}
-                                className="w-full py-3 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
-                            >
-                                ログアウト
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
