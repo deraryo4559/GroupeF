@@ -140,9 +140,6 @@ const BillingStatus = () => {
                                 {Number(b.amount).toLocaleString()}<span className="text-base ml-0.5">円</span>
                               </div>
                               <div className="text-xs text-gray-500 mt-1">{formatDate(b.createdAt)}</div>
-                              {b.message && (
-                                <div className="text-[13px] text-gray-700 mt-1 line-clamp-2">{b.message}</div>
-                              )}
                             </div>
                             <div className="flex flex-col items-end gap-2">
                               <span className={`text-[11px] px-2 py-0.5 rounded-full ${badge.bg} ${badge.text} ring-1 ${badge.ring}`}>
