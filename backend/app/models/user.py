@@ -8,13 +8,9 @@ def get_db_connection():
     return conn
 
 def get_all_users(exclude_user_id=None):
-    """
-    指定されたIDを除く、全ユーザーのリストを取得します。
-    送金相手の一覧表示に使用します。
-    """
     conn = get_db_connection()
     
-    query = 'SELECT user_id, name, avatar_path FROM users'
+    query = 'SELECT user_id, name, email, avatar_path, created_at FROM users'
     params = []
     
     if exclude_user_id:
@@ -24,5 +20,5 @@ def get_all_users(exclude_user_id=None):
     users = conn.execute(query, params).fetchall()
     conn.close()
     
-    # DBの検索結果をPythonの辞書のリストに変換して返す
     return [dict(user) for user in users]
+

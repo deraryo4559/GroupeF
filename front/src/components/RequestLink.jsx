@@ -14,26 +14,21 @@ function RequestLink() {
   const navigate = useNavigate();
 
   // 現在の日付と時間を設定
-  useEffect(() => {
-    const now = new Date();
-    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    const timeOptions = { hour: '2-digit', minute: '2-digit' };
-    setCurrentDate(now.toLocaleDateString('ja-JP', dateOptions));
-    setCurrentTime(now.toLocaleTimeString('ja-JP', timeOptions));
+useEffect(() => {
+  const now = new Date();
+  const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  const timeOptions = { hour: '2-digit', minute: '2-digit' };
+  setCurrentDate(now.toLocaleDateString('ja-JP', dateOptions));
+  setCurrentTime(now.toLocaleTimeString('ja-JP', timeOptions));
 
-    // ユーザー情報を取得 (ダミー)
-    const fetchUserName = async () => {
-      try {
-        // APIから取得する場合はこちらに実装
-        // 仮のデータ
-        setUserName("サンプル氏名");
-      } catch (error) {
-        console.error("ユーザー情報の取得に失敗:", error);
-      }
-    };
+  // sessionStorage からログインユーザーを取得
+  const saved = sessionStorage.getItem("authUser");
+  const me = saved ? JSON.parse(saved) : null;
+  if (me) {
+    setUserName(me.name); // ← サーバーにあるユーザー名を表示
+  }
+}, []);
 
-    fetchUserName();
-  }, []);
 
   // 金額入力の処理 - カンマ区切り対応版
   const handleAmountChange = (e) => {
