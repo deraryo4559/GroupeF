@@ -33,6 +33,9 @@ def create_app():
     from .routes.sendMoneys import send_money_bp
     app.register_blueprint(send_money_bp, url_prefix='/api/send_money')
 
+    from .routes.transactions import transactions_bp
+    app.register_blueprint(transactions_bp, url_prefix="/api/transactions")
+
     # デバッグ：URLマップを起動時に出力
     print("=== URL MAP ===")
     for rule in app.url_map.iter_rules():

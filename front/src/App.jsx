@@ -13,6 +13,8 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import TransactionsList from './pages/TransactionsList.jsx';
 import PaymentRequest from './pages/PaymentRequest';
+import Help from './pages/Help.jsx';
+import SupportAI from "./pages/SupportAI";
 
 // 認証が必要なルートを保護するコンポーネント
 function ProtectedRoute({ children }) {
@@ -70,6 +72,8 @@ function App() {
           <Route path="/payment/complete" element={<ProtectedRoute><PaymentComplete /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/pay/:token" element={<PaymentRequest />} />
+          <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
+          <Route path="/support-ai" element={<ProtectedRoute><SupportAI /></ProtectedRoute>} />
         </Routes>
       </div>
     </Router>
