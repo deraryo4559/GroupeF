@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import BalanceCard from '../components/BalanceCard';
 import MenuIconButton from '../components/MenuIconButton';
 import UserInfoCard from '../components/UserInfoCard';
-import { SendIcon, RequestIcon, StatusIcon, ProfileIcon, ReceiptIcon } from '../components/MenuIcons';
+import { SendIcon, RequestIcon, StatusIcon, ProfileIcon, ReceiptIcon, HistoryIcon, HelpIcon, AiIcon } from '../components/MenuIcons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Top = () => {
@@ -112,7 +112,7 @@ const Top = () => {
                             />
 
                             <MenuIconButton
-                                label="請求ステータス"
+                                label="請求履歴"
                                 icon={<ReceiptIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
@@ -121,10 +121,26 @@ const Top = () => {
 
                             <MenuIconButton
                                 label="取引履歴"
-                                icon={<ProfileIcon />}
+                                icon={<HistoryIcon />}
                                 bgColor="bg-gray-200"
                                 textColor="text-gray-600"
                                 onClick={() => window.location.href = '/TransactionsList'}
+                            />
+
+                            <MenuIconButton
+                                label="ヘルプ"
+                                icon={<HelpIcon />}
+                                bgColor="bg-gray-200"
+                                textColor="text-gray-600"
+                                onClick={() => navigate('/help')}
+                            />
+
+                            <MenuIconButton
+                                label="AIサポート"
+                                icon={<AiIcon />}
+                                bgColor="bg-gray-200"
+                                textColor="text-gray-600"
+                                onClick={() => navigate('/support-ai')}
                             />
                         </section>
 
