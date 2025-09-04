@@ -16,48 +16,53 @@ const Profile = () => {
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const TARGET_USER_ID = 52; // 鈴木一郎のユーザーID
-        setIsLoading(true);
+useEffect(() => {
+    setIsLoading(true);
 
-        // ユーザー情報とアカウント情報を並行取得
-        Promise.all([
-            fetch('http://localhost:5000/api/users/').then(res => res.json()),
-            fetch('http://localhost:5000/api/accounts_all/').then(res => res.json())
-        ])
-        .then(([users, accounts]) => {
-            const user = users.find(u => Number(u.user_id) === Number(TARGET_USER_ID));
-            const account = accounts.find(a => Number(a.user_id) === Number(TARGET_USER_ID));
+    // sessionStorage からログインユーザーを取得
+    const saved = sessionStorage.getItem("authUser");
+    const me = saved ? JSON.parse(saved) : null;
+    const TARGET_USER_ID = me?.user_id ?? 52; // 未ログイン時はデフォルト 52
 
-            if (user) {
-                setUserInfo({
-                    name: user.name || "鈴木一郎",
-                    email: user.email || "suzuki.ichiro@example.com",
-                    avatarPath: user.avatar_path || "/images/human1.png",
-                    userId: user.user_id,
-                    accountNumber: account?.account_number || "1234567890",
-                    balance: account?.balance || 0,
-                    createdAt: user.created_at || new Date().toISOString()
-                });
-            }
-        })
-        .catch(err => {
-            console.error("プロフィール情報の取得に失敗:", err);
-            // エラー時はデフォルト値を設定
+    // ユーザー情報とアカウント情報を並行取得
+    Promise.all([
+        fetch('http://localhost:5000/api/users/').then(res => res.json()),
+        fetch('http://localhost:5000/api/accounts_all/').then(res => res.json())
+    ])
+    .then(([users, accounts]) => {
+        const user = users.find(u => Number(u.user_id) === Number(TARGET_USER_ID));
+        const account = accounts.find(a => Number(a.user_id) === Number(TARGET_USER_ID));
+
+        if (user) {
             setUserInfo({
-                name: "鈴木一郎",
-                email: "suzuki.ichiro@example.com",
-                avatarPath: "/images/human1.png",
-                userId: "52",
-                accountNumber: "1234567890",
-                balance: 50000,
-                createdAt: new Date().toISOString()
+                name: user.name || "ゲストユーザー",
+                email: user.email || "guest@example.com",
+                avatarPath: user.avatar_path || "/images/human1.png",
+                userId: user.user_id,
+                accountNumber: account?.account_number || "1234567890",
+                balance: account?.balance || 0,
+                createdAt: user.created_at || new Date().toISOString()
             });
-        })
-        .finally(() => {
-            setIsLoading(false);
+        }
+    })
+    .catch(err => {
+        console.error("プロフィール情報の取得に失敗:", err);
+        // エラー時はデフォルト値を設定
+        setUserInfo({
+            name: "ゲストユーザー",
+            email: "guest@example.com",
+            avatarPath: "/images/human1.png",
+            userId: TARGET_USER_ID,
+            accountNumber: "1234567890",
+            balance: 50000,
+            createdAt: new Date().toISOString()
         });
-    }, []);
+    })
+    .finally(() => {
+        setIsLoading(false);
+    });
+}, []);
+
 
     const formatDate = (dateString) => {
         try {

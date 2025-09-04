@@ -24,11 +24,14 @@ function SendMoney() {
     email: "",
   };
 
+  const saved = sessionStorage.getItem("authUser");
+  const loginUser = saved ? JSON.parse(saved) : null;
+
   // バックエンドから残高を取得
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/accounts/52`, {
+        const response = await fetch(`http://localhost:5000/api/accounts/${loginUser.user_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -100,7 +103,7 @@ function SendMoney() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          sender_id: 52,              // 自分のID
+          sender_id: loginUser.user_id,              // 自分のID
           receiver_id: receiverId,    // 送金相手のID
           amount: Number(amount),
           message: message,
