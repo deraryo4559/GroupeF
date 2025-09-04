@@ -56,6 +56,26 @@ CREATE TABLE IF NOT EXISTS payment_requests (
 cursor.execute(create_payment_requests_table_sql)
 print("'payment_requests' テーブルが正常に作成されました。")
 
+# --- 4. transactions テーブルを作成するSQL文 ---
+create_transactions_table_sql = """
+CREATE TABLE IF NOT EXISTS transactions (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,       -- 取引を一意に特定するID
+    sender_account_id   INTEGER NOT NULL,                     -- 送金元口座ID (accounts.id を参照)
+    receiver_account_id INTEGER,                              -- 送金先口座ID (accounts.id を参照)
+    amount           DECIMAL NOT NULL,                        -- 取引金額
+    currency         VARCHAR(3) NOT NULL DEFAULT 'JPY',       -- 通貨コード
+    message          TEXT,                                    -- 任意のメッセージ
+    status           TEXT NOT NULL DEFAULT 'pending'
+                       CHECK (status IN ('pending','completed','failed')),
+    transaction_type TEXT NOT NULL
+                       CHECK (transaction_type IN ('transfer','deposit','withdrawal')),
+    created_at       TEXT NOT NULL DEFAULT (DATETIME('now','localtime')),
+    FOREIGN KEY (sender_account_id) REFERENCES accounts(id),
+    FOREIGN KEY (receiver_account_id) REFERENCES accounts(id)
+);
+"""
+cursor.execute(create_transactions_table_sql)
+print("'transactions' テーブルが正常に作成されました。")
 
 # データベースへの変更を確定（保存）します
 connection.commit()

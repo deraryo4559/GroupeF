@@ -4,7 +4,7 @@ import Button1 from '../components/button1';
 import Header from '../components/Header';
 
 const PaymentComplete = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
     return (
         <>

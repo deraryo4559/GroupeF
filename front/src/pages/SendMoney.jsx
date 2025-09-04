@@ -9,7 +9,9 @@ function SendMoney() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const [balance, setBalance] = useState(0);
+  const authUser = JSON.parse(sessionStorage.getItem("authUser") || "{}");
+  const [balance, setBalance] = useState(Number(authUser?.balance ?? 0));
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
@@ -89,9 +91,11 @@ function SendMoney() {
     try {
       // 送金先のIDを決定（user_idまたはidのどちらかを使用）
       const receiverId = user.user_id;
+      const me = JSON.parse(sessionStorage.getItem('authUser') || '{}');
+      const myUserId = Number(me?.user_id ?? 52); // フォールバック52
 
       console.log("Sending request:", {
-        sender_id: 52,
+        sender_id: myUserId,
         receiver_id: receiverId,
         amount: Number(amount),
         message: message,

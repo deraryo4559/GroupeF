@@ -4,7 +4,7 @@ import Button1 from '../components/button1';
 import Header from '../components/Header';
 
 const SendMoneyComplete = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
     const handleBackToHome = () => {
         navigate('/');
