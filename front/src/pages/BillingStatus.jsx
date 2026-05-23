@@ -1,12 +1,10 @@
 // src/pages/BillingStatus.jsx
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button1 from '../components/button1';
 import Header from '../components/Header';
+import { apiFetch } from "../lib/api";
 
 const BillingStatus = () => {
-  const navigate = useNavigate();
-
   const [billingHistory, setBillingHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
@@ -22,9 +20,9 @@ const BillingStatus = () => {
   useEffect(() => {
     const saved = sessionStorage.getItem('authUser');
     const me = saved ? JSON.parse(saved) : null;
-    const requester_user_id = me?.user_id ?? 52;
+    const requester_user_id = me?.user_id;
 
-    fetch(`http://localhost:5000/api/requests/?requester_user_id=${requester_user_id}`)
+    apiFetch(`/api/requests/?requester_user_id=${requester_user_id}`)
       .then(async (res) => {
         const data = await res.json().catch(() => null);
         if (!res.ok || !data?.ok) throw new Error(data?.message || `Failed: ${res.status}`);
@@ -70,7 +68,7 @@ const BillingStatus = () => {
 
   const cancelRequest = async (billingId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/requests/${billingId}/cancel`, {
+      const res = await apiFetch(`/api/requests/${billingId}/cancel`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });

@@ -1,11 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button1 from '../components/button1';
 import Header from '../components/Header';
 
 const PaymentComplete = () => {
-  const navigate = useNavigate();
-
     return (
         <>
             <Header title="支払い" />

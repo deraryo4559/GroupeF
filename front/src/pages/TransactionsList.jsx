@@ -1,12 +1,10 @@
 // src/pages/TransactionsList.jsx
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button1 from '../components/button1';
 import Header from '../components/Header';
+import { apiFetch } from "../lib/api";
 
 const TransactionsList = () => {
-  const navigate = useNavigate();
-
   const [transactions, setTransactions] = useState([]);
   const [myAccountId, setMyAccountId]   = useState(null);
   const [loading, setLoading]           = useState(true);
@@ -37,27 +35,31 @@ const TransactionsList = () => {
   useEffect(() => {
     const saved = sessionStorage.getItem('authUser');
     const me = saved ? JSON.parse(saved) : null;
-    const userId = Number(me?.user_id ?? 52);
+    const userId = Number(me?.user_id);
 
     const fetchMyAccount = async () => {
       try {
-        const r = await fetch(`http://localhost:5000/api/accounts/${userId}`);
+        const r = await apiFetch(`/api/accounts/${userId}`);
         const j = await r.json().catch(() => null);
         if (r.ok && j && (j.id ?? j.account_id)) return Number(j.id ?? j.account_id);
-      } catch {}
+      } catch {
+        // Fall back to the account list below.
+      }
       try {
-        const r2 = await fetch('http://localhost:5000/api/accounts_all/');
+        const r2 = await apiFetch('/api/accounts_all/');
         const arr = await r2.json().catch(() => []);
         const meAcc = Array.isArray(arr)
           ? arr.find(a => Number(a.user_id ?? a.owner_user_id ?? a.userId) === userId)
           : null;
         if (meAcc) return Number(meAcc.id ?? meAcc.account_id);
-      } catch {}
+      } catch {
+        return null;
+      }
       return null;
     };
 
     const fetchTx = async () => {
-      const r = await fetch(`http://localhost:5000/api/transactions/?user_id=${userId}`);
+      const r = await apiFetch(`/api/transactions/?user_id=${userId}`);
       const j = await r.json().catch(() => null);
       if (!r.ok || !j?.ok) throw new Error(j?.message || `Failed: ${r.status}`);
       return j.items || [];
@@ -102,7 +104,7 @@ const TransactionsList = () => {
         let uIdx = userIndex; // ユーザーID(String) -> 情報
 
         if (!aIdx) {
-          const r = await fetch('http://localhost:5000/api/accounts_all/');
+          const r = await apiFetch('/api/accounts_all/');
           const arr = await r.json().catch(() => []);
           aIdx = {};
           for (const a of (Array.isArray(arr) ? arr : [])) {
@@ -116,7 +118,7 @@ const TransactionsList = () => {
         }
 
         if (!uIdx) {
-          const r = await fetch('http://localhost:5000/api/users/');
+          const r = await apiFetch('/api/users/');
           const arr = await r.json().catch(() => []);
           uIdx = {};
           for (const u of (Array.isArray(arr) ? arr : [])) {

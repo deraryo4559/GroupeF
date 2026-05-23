@@ -1,13 +1,16 @@
 import sqlite3
 import random
+import os
+from werkzeug.security import generate_password_hash
 
 # データベースファイルに接続します
-connection = sqlite3.connect('app/money_app.db')
+connection = sqlite3.connect(os.environ.get("SQLITE_DB_PATH", "app/money_app.db"))
 cursor = connection.cursor()
 
 try:
     # --- 0. 既存のデータをすべて削除 ---
-    # 外部キー制約があるため、accountsテーブルから先に削除します
+    cursor.execute('DELETE FROM transactions')
+    cursor.execute('DELETE FROM payment_requests')
     cursor.execute('DELETE FROM accounts')
     cursor.execute('DELETE FROM users')
     print("既存のテストデータをすべて削除しました。")
@@ -24,7 +27,7 @@ try:
         user = (
             name,
             f'test{i}@example.com',
-            f'hashed_password_{i}',
+            generate_password_hash('password123'),
             # ランダムな数字を使って画像パスを生成します
             f'/images/human{avatar_num}.png'
         )
@@ -66,4 +69,3 @@ finally:
     # データベースへの変更を確定（保存）し、接続を閉じます
     connection.commit()
     connection.close()
-

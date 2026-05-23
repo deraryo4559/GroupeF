@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import { Link, useNavigate } from 'react-router-dom';
 import UserInfoCardStatic from '../components/UserInfoCardStatic';
+import { apiFetch, clearAuthSession } from "../lib/api";
 
 const Profile = () => {
     const [userInfo, setUserInfo] = useState({
@@ -14,18 +15,15 @@ const Profile = () => {
         balance: "取得中…",
         createdAt: "取得中…"
     });
-    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     // ログアウト機能
     const handleLogout = () => {
-        sessionStorage.removeItem("authUser");
+        clearAuthSession();
         navigate("/auth");
     };
 
     useEffect(() => {
-        setIsLoading(true);
-
         // sessionStorage からログインユーザーを取得
         const saved = sessionStorage.getItem("authUser");
         const me = saved ? JSON.parse(saved) : null;
@@ -33,8 +31,8 @@ const Profile = () => {
 
         // ユーザー情報とアカウント情報を並行取得
         Promise.all([
-            fetch('http://localhost:5000/api/users/').then(res => res.json()),
-            fetch('http://localhost:5000/api/accounts_all/').then(res => res.json())
+            apiFetch('/api/users/').then(res => res.json()),
+            apiFetch('/api/accounts_all/').then(res => res.json())
         ])
             .then(([users, accounts]) => {
                 const user = users.find(u => Number(u.user_id) === Number(TARGET_USER_ID));
@@ -65,9 +63,7 @@ const Profile = () => {
                     createdAt: new Date().toISOString()
                 });
             })
-            .finally(() => {
-                setIsLoading(false);
-            });
+            .finally(() => {});
     }, []);
 
 

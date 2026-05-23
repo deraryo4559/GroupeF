@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: groupef-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash start.sh
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
+      - key: SQLITE_DB_PATH
+        value: /var/data/money_app.db
+      - key: FLASK_DEBUG
+        value: "0"
+      - key: AUTH_TOKEN_MAX_AGE_SECONDS
+        value: "86400"
+    disk:
+      name: groupef-data
+      mountPath: /var/data
+      sizeGB: 1

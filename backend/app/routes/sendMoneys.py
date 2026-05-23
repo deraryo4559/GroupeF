@@ -1,10 +1,12 @@
 # routes/sendMoneys.py
 from flask import Blueprint, request, jsonify
+from app.auth_utils import current_user_id, require_auth
 from app.models import sendMoney as sendMoney_model
 
 send_money_bp = Blueprint('send_money', __name__)
 
 @send_money_bp.route('/', methods=['POST', 'OPTIONS'])
+@require_auth
 def send_money():
     """
     送金を処理するAPIエンドポイント
@@ -12,7 +14,6 @@ def send_money():
     # プリフライトリクエスト（OPTIONS）への対応
     if request.method == 'OPTIONS':
         response = jsonify({'message': 'OK'})
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
         response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -40,6 +41,9 @@ def send_money():
                 'message': '送金者ID、受取者ID、金額は必須です'
             }), 400
 
+        if int(sender_id) != current_user_id():
+            return jsonify({'status': 'error', 'message': 'ログインユーザーと送金元が一致しません'}), 403
+
         if not isinstance(amount, (int, float)) or amount <= 0:
             return jsonify({
                 'status': 'error', 
@@ -56,8 +60,8 @@ def send_money():
             return jsonify(result), 400
 
     except Exception as e:
-        print(f"Error in send_money: {str(e)}")  # デバッグ用
+        print(f"Error in send_money: {str(e)}")
         return jsonify({
             'status': 'error', 
-            'message': f'サーバーエラーが発生しました: {str(e)}'
+            'message': 'サーバーエラーが発生しました'
         }), 500

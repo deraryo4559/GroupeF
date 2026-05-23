@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom"; 
 import Header from '../components/Header';
 import Button1 from '../components/button1';
+import { apiFetch, saveAuthSession } from "../lib/api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ export default function Login() {
     e.preventDefault();
     setStatus("ログイン試行中…");
     try {
-      const res = await fetch("http://localhost:5000/api/auth/mock-login", {
+      const res = await apiFetch("/api/auth/mock-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -28,11 +29,11 @@ export default function Login() {
       setStatus("ログイン成功！");
       console.log("ログイン成功:", data.user);
 
-      //sessionStorage に認証情報を保存
-      sessionStorage.setItem("authUser", JSON.stringify(data.user));
+      const sessionUser = { ...data.user, access_token: data.access_token };
+      saveAuthSession(data.user, data.access_token);
 
       //Top.jsx に遷移
-      navigate("/", { state: { user: data.user } });
+      navigate("/", { state: { user: sessionUser } });
     } catch (err) {
       console.error("通信エラー:", err);
       setStatus("失敗");

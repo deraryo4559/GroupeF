@@ -1,7 +1,8 @@
 import sqlite3
+import os
 
 # データベースファイルに接続します
-connection = sqlite3.connect('app/money_app.db')
+connection = sqlite3.connect(os.environ.get("SQLITE_DB_PATH", "app/money_app.db"))
 cursor = connection.cursor()
 
 # 外部キー制約を有効にするためのPRAGMA文（SQLiteで必要）
@@ -82,4 +83,3 @@ connection.commit()
 
 # 接続を閉じます
 connection.close()
-

@@ -1,7 +1,7 @@
 // UserInfoCardStatic.jsx (クリック動作を無効にした静的バージョン)
 import React from 'react';
 
-const UserInfoCardStatic = ({ userName, userId, accountNumber, avatarPath }) => {
+const UserInfoCardStatic = ({ userName, avatarPath }) => {
     return (
         <section className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
             <div

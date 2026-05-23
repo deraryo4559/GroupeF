@@ -1,15 +1,14 @@
 # app/routes/transactions.py
 from flask import Blueprint, request, jsonify, current_app
 from flask_cors import cross_origin
-import sqlite3, os
+from app.auth_utils import current_user_id, require_auth
+from app.db import get_db_connection
 
 transactions_bp = Blueprint("transactions", __name__)
 
-def _db_path() -> str:
-    return os.path.join(current_app.root_path, "money_app.db")
-
 @transactions_bp.route("/", methods=["GET"])
 @cross_origin()
+@require_auth
 def list_transactions():
     """
     GET /api/transactions/?user_id=52
@@ -18,9 +17,10 @@ def list_transactions():
     user_id = request.args.get("user_id", type=int)
     if not user_id:
         return jsonify({"ok": False, "message": "user_id is required"}), 400
+    if user_id != current_user_id():
+        return jsonify({"ok": False, "message": "forbidden"}), 403
 
-    conn = sqlite3.connect(_db_path())
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     try:
         cur = conn.cursor()
         # このユーザーの口座IDを取得

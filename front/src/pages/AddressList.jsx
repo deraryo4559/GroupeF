@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon';
 import Header from '../components/Header';
+import { apiFetch } from "../lib/api";
 
 function AddressList() {
   const navigate = useNavigate();
@@ -10,13 +11,13 @@ function AddressList() {
   useEffect(() => {
     const saved = sessionStorage.getItem("authUser");
     const me = saved ? JSON.parse(saved) : null;
-    const myId = me?.user_id ?? 52;
+    const myId = me?.user_id;
 
     // デバッグ用ログ
     console.log("認証ユーザー情報:", me);
     console.log("除外するユーザーID:", myId);
 
-    fetch(`http://localhost:5000/api/users?exclude_id=${myId}`)
+    apiFetch(`/api/users?exclude_id=${myId}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('データの取得に失敗しました');

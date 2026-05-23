@@ -1,12 +1,13 @@
 # app/routes/auth.py
 from flask import Blueprint, request, jsonify, current_app
 from flask_cors import cross_origin
-import sqlite3, os,hashlib, random, string, datetime
+from werkzeug.security import check_password_hash, generate_password_hash
+import random, string, datetime
+
+from app.auth_utils import create_access_token
+from app.db import get_db_connection
 
 auth_bp = Blueprint("auth", __name__)
-
-def _db_path() -> str:
-    return os.path.join(current_app.root_path, "money_app.db")
 
 @auth_bp.route("/mock-login", methods=["POST"])
 @cross_origin()
@@ -15,26 +16,25 @@ def mock_login():
     email = (data.get("email") or "").strip()
     password = (data.get("password") or "").strip()
 
-    # 入力されたパスワードをハッシュ化
-    password_hash = _hash_password(password)
-
-    conn = sqlite3.connect(_db_path())
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     try:
         row = conn.execute(
-            "SELECT user_id, name, email FROM users WHERE email=? AND password_hash=?",
-            (email, password_hash),
+            "SELECT user_id, name, email, password_hash FROM users WHERE email=?",
+            (email,),
         ).fetchone()
-        if not row:
+        if not row or not check_password_hash(row["password_hash"], password):
             return jsonify({"ok": False, "message": "invalid credentials"}), 401
+
+        user = {
+            "user_id": row["user_id"],
+            "name": row["name"],
+            "email": row["email"],
+        }
 
         return jsonify({
             "ok": True,
-            "user": {
-                "user_id": row["user_id"],
-                "name": row["name"],
-                "email": row["email"],
-            }
+            "user": user,
+            "access_token": create_access_token(user),
         }), 200
     finally:
         conn.close()
@@ -48,9 +48,6 @@ def ping():
 
 
 
-
-def _hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 def _generate_account_number() -> str:
     return ''.join(random.choices(string.digits, k=10))
@@ -66,8 +63,7 @@ def register():
     if not all([name, email, password]):
         return jsonify({"ok": False, "message": "name, email, password が必要です"}), 400
 
-    conn = sqlite3.connect(_db_path())
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     cur = conn.cursor()
 
     cur.execute("SELECT 1 FROM users WHERE email=?", (email,))
@@ -76,7 +72,7 @@ def register():
         return jsonify({"ok": False, "message": "このメールアドレスは既に登録されています"}), 400
 
     now = datetime.datetime.utcnow().isoformat()
-    password_hash = _hash_password(password)
+    password_hash = generate_password_hash(password)
 
     try:
         cur.execute("""
@@ -95,7 +91,8 @@ def register():
     except Exception as e:
         conn.rollback()
         conn.close()
-        return jsonify({"ok": False, "message": f"DBエラー: {str(e)}"}), 500
+        current_app.logger.exception("register failed")
+        return jsonify({"ok": False, "message": "DBエラーが発生しました"}), 500
 
     conn.close()
 
@@ -107,6 +104,11 @@ def register():
             "name": name,
             "email": email,
             "account_number": account_number,
-            "balance": 0,
-        }
+            "balance": 100000,
+        },
+        "access_token": create_access_token({
+            "user_id": user_id,
+            "name": name,
+            "email": email,
+        }),
     }), 201

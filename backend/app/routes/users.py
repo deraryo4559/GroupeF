@@ -1,10 +1,12 @@
 from flask import Blueprint, jsonify, request
+from app.auth_utils import require_auth
 from app.models import user as user_model
 
 # 'users'という名前でBlueprintを作成
 users_bp = Blueprint('users', __name__)
 
 @users_bp.route('/', methods=['GET'])
+@require_auth
 def get_user_list():
     """
     送金相手の候補となるユーザーリストを取得するAPI。

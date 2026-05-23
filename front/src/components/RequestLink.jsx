@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import Button1 from "./button1";
 import Botton1 from './button1';
+import { apiFetch } from "../lib/api";
 
 function RequestLink() {
   const [reqAmount, setReqAmount] = useState("");
@@ -70,10 +71,10 @@ function RequestLink() {
     // ログイン中ユーザーIDを sessionStorage から取得
     const saved = sessionStorage.getItem("authUser");
     const me = saved ? JSON.parse(saved) : null;
-    const requester_user_id = me?.user_id ?? 52; // fallbackで52
+    const requester_user_id = me?.user_id;
 
     try {
-      const res = await fetch("http://localhost:5000/api/requests/", {
+      const res = await apiFetch("/api/requests/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

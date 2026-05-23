@@ -1,15 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button1 from '../components/button1';
 import Header from '../components/Header';
 
 const SendMoneyComplete = () => {
-  const navigate = useNavigate();
-
-    const handleBackToHome = () => {
-        navigate('/');
-    };
-
     return (
         <>
             <Header title="送金" />

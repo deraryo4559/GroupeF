@@ -1,11 +1,5 @@
-import sqlite3
 import uuid
-
-def get_db_connection():
-    """データベース接続を取得するヘルパー関数"""
-    conn = sqlite3.connect('app/money_app.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+from app.db import get_db_connection
 
 def create_payment_request(requester_id, amount, message=None):
     """

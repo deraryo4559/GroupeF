@@ -1,10 +1,12 @@
 # app/routes/accounts.py
 from flask import Blueprint, jsonify, request
+from app.auth_utils import require_auth
 from app.models import account_all as account_model
 
 accounts_all_bp = Blueprint('accounts_all', __name__)
 
 @accounts_all_bp.route('/', methods=['GET'])
+@require_auth
 def get_account_list():
     """全アカウントリストを返す"""
     exclude_id = request.args.get('exclude_id', type=int)

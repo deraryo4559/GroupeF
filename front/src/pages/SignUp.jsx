@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from '../components/Header';
 import Button1 from '../components/button1';
+import { apiFetch } from "../lib/api";
 
 export default function SignUp() {
     const [name, setName] = useState("");
@@ -28,14 +29,18 @@ export default function SignUp() {
         // 注：バックエンドに新規登録APIがまだ実装されていないため、モック処理
         try {
             // 実際のAPIが実装されたらこのURLを変更
-            const res = await fetch("http://localhost:5000/api/auth/register", {
+            const res = await apiFetch("/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name , email, password }),
             });
 
-            // 実際はここでユーザー登録処理を行う
-            // この例では単純にログイン成功とみなす
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+                setStatus(data.message || "登録に失敗しました");
+                return;
+            }
+
             setStatus("登録完了！ログインページへ移動します...");
 
             // 2秒後にログインページへ移動

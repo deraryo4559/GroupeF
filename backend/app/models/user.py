@@ -1,11 +1,4 @@
-import sqlite3
-
-def get_db_connection():
-    """データベース接続を取得するヘルパー関数"""
-    conn = sqlite3.connect('app/money_app.db')
-    # 結果を辞書のようにカラム名でアクセスできるようにする
-    conn.row_factory = sqlite3.Row
-    return conn
+from app.db import get_db_connection
 
 def get_all_users(exclude_user_id=None):
     conn = get_db_connection()
@@ -21,4 +14,3 @@ def get_all_users(exclude_user_id=None):
     conn.close()
     
     return [dict(user) for user in users]
-

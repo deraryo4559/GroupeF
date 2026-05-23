@@ -4,6 +4,7 @@ import Button1 from '../components/button1';
 import Balance from '../components/Balance';
 import Header from '../components/Header';
 import Icon from "../components/Icon";
+import { apiFetch } from "../lib/api";
 
 function SendMoney() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function SendMoney() {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/accounts/${loginUser.user_id}`, {
+        const response = await apiFetch(`/api/accounts/${loginUser.user_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -54,7 +55,7 @@ function SendMoney() {
     };
 
     fetchBalance();
-  }, []);
+  }, [loginUser?.user_id]);
 
   // userのlimitも残高と同期
   const syncedUser = { ...user, limit: balance };
@@ -92,7 +93,7 @@ function SendMoney() {
       // 送金先のIDを決定（user_idまたはidのどちらかを使用）
       const receiverId = user.user_id;
       const me = JSON.parse(sessionStorage.getItem('authUser') || '{}');
-      const myUserId = Number(me?.user_id ?? 52); // フォールバック52
+      const myUserId = Number(me?.user_id);
 
       console.log("Sending request:", {
         sender_id: myUserId,
@@ -101,7 +102,7 @@ function SendMoney() {
         message: message,
       });
 
-      const response = await fetch("http://localhost:5000/api/send_money/", {
+      const response = await apiFetch("/api/send_money/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

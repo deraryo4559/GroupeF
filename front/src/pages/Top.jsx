@@ -7,6 +7,7 @@ import MenuIconButton from '../components/MenuIconButton';
 import UserInfoCard from '../components/UserInfoCard';
 import { SendIcon, RequestIcon, StatusIcon, ProfileIcon, ReceiptIcon, HistoryIcon, HelpIcon, AiIcon } from '../components/MenuIcons';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { apiFetch } from "../lib/api";
 
 const Top = () => {
   const location = useLocation();
@@ -24,25 +25,22 @@ const Top = () => {
     if (loginUser) {
       sessionStorage.setItem("authUser", JSON.stringify(loginUser));
     }
-  }, []); // 空配列で一度だけ
+  }, [loginUser]);
 
   const [userName, setUserName] = useState("読み込み中…");
   const [avatarPath, setAvatarPath] = useState("/images/human1.png");
   const [accountNumber, setAccountNumber] = useState("取得中…");
   const [balance, setBalance] = useState("取得中…");
   const [userId, setUserId] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
 
   // --- ユーザー情報取得 ---
   useEffect(() => {
     if (!loginUser) return; // 未ログインなら処理しない
 
     const TARGET_USER_ID = loginUser.user_id;
-    setIsLoading(true);
-
     Promise.all([
-      fetch("http://localhost:5000/api/users/").then((res) => res.json()),
-      fetch("http://localhost:5000/api/accounts_all/").then((res) => res.json()),
+      apiFetch("/api/users/").then((res) => res.json()),
+      apiFetch("/api/accounts_all/").then((res) => res.json()),
     ])
       .then(([users, accounts]) => {
         // --- ユーザー情報 ---
@@ -66,10 +64,8 @@ const Top = () => {
       .catch((err) => {
         console.error("ユーザー/アカウント情報の取得に失敗:", err);
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []); // loginUser は初期化時に固定しているので依存配列は空で OK
+      .finally(() => {});
+  }, [loginUser]);
 
 
   return (

@@ -1,18 +1,18 @@
 # app/routes/requests.py
 from flask import Blueprint, request, jsonify, current_app
 from flask_cors import cross_origin
-import sqlite3, os, secrets
+import secrets
+
+from app.auth_utils import current_user_id, require_auth
+from app.db import get_db_connection
 
 # Blueprintを作成
 requests_bp = Blueprint("requests", __name__)
 
-# DBパスを組み立てる関数
-def _db_path() -> str:
-    return os.path.join(current_app.root_path, "money_app.db")
-
 # --- 請求作成API ---
 @requests_bp.route("/", methods=["POST"])
 @cross_origin()
+@require_auth
 def create_request():
     """
     POST /api/requests/
@@ -26,13 +26,14 @@ def create_request():
     # バリデーション
     if requester_user_id <= 0:
         return jsonify({"ok": False, "message": "requester_user_id is required"}), 400
+    if requester_user_id != current_user_id():
+        return jsonify({"ok": False, "message": "forbidden"}), 403
     if amount < 1 or amount > 50000:
         return jsonify({"ok": False, "message": "amount must be 1..50000"}), 400
 
     token = secrets.token_urlsafe(8)  # 請求リンク用の短い識別子
 
-    conn = sqlite3.connect(_db_path())
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     try:
         cur = conn.cursor()
         cur.execute("""
@@ -69,6 +70,7 @@ def create_request():
 # --- 請求一覧API ---
 @requests_bp.route("/", methods=["GET"])
 @cross_origin()
+@require_auth
 def list_requests():
     """
     GET /api/requests/?requester_user_id=52
@@ -76,9 +78,10 @@ def list_requests():
     requester_user_id = request.args.get("requester_user_id", type=int)
     if not requester_user_id:
         return jsonify({"ok": False, "message": "requester_user_id is required"}), 400
+    if requester_user_id != current_user_id():
+        return jsonify({"ok": False, "message": "forbidden"}), 403
 
-    conn = sqlite3.connect(_db_path())
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     try:
         rows = conn.execute("""
             SELECT id, token, requester_user_id, amount, message, status, created_at
@@ -105,13 +108,13 @@ def list_requests():
 # --- 請求キャンセルAPI ---
 @requests_bp.route("/<int:request_id>/cancel", methods=["POST", "OPTIONS"])
 @cross_origin()
+@require_auth
 def cancel_request(request_id):
     """
     POST /api/requests/<id>/cancel
     Body: {}
     """
-    conn = sqlite3.connect(_db_path())
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     try:
         cur = conn.cursor()
 
@@ -119,8 +122,8 @@ def cancel_request(request_id):
         cur.execute("""
             UPDATE payment_requests
             SET status = 'canceled'
-            WHERE id = ? AND status != 'success'
-        """, (request_id,))
+            WHERE id = ? AND requester_user_id = ? AND status != 'success'
+        """, (request_id, current_user_id()))
         conn.commit()
 
         if cur.rowcount == 0:
@@ -151,8 +154,7 @@ def get_request_by_token(token):
     if not token:
         return jsonify({"ok": False, "message": "token is required"}), 400
 
-    conn = sqlite3.connect(_db_path())
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     try:
         # 請求情報を取得
         row = conn.execute("""
@@ -185,6 +187,7 @@ def get_request_by_token(token):
 # --- 支払い処理API ---
 @requests_bp.route("/<token>/pay", methods=["POST"])
 @cross_origin()
+@require_auth
 def pay_request(token):
     """
     POST /api/requests/:token/pay
@@ -199,9 +202,10 @@ def pay_request(token):
     
     if paid_by_id <= 0:
         return jsonify({"ok": False, "message": "paid_by_id is required"}), 400
+    if paid_by_id != current_user_id():
+        return jsonify({"ok": False, "message": "forbidden"}), 403
     
-    conn = sqlite3.connect(_db_path())
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     
     try:
         # トランザクション開始
@@ -274,7 +278,8 @@ def pay_request(token):
     
     except Exception as e:
         conn.rollback()
-        return jsonify({"ok": False, "message": f"エラーが発生しました: {str(e)}"}), 500
+        current_app.logger.exception("pay request failed")
+        return jsonify({"ok": False, "message": "エラーが発生しました"}), 500
     
     finally:
         conn.close()

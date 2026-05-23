@@ -1,12 +1,21 @@
 # __init__.py
 from flask import Flask
 from flask_cors import CORS
+import os
 
 def create_app():
     app = Flask(__name__)
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-secret-key")
     
-    # より詳細なCORS設定
-    CORS(app)
+    cors_origins = [
+        origin.strip()
+        for origin in os.environ.get(
+            "CORS_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175",
+        ).split(",")
+        if origin.strip()
+    ]
+    CORS(app, resources={r"/api/*": {"origins": cors_origins}}, supports_credentials=True)
 
     @app.route("/")
     def hello_world():
@@ -36,9 +45,9 @@ def create_app():
     from .routes.transactions import transactions_bp
     app.register_blueprint(transactions_bp, url_prefix="/api/transactions")
 
-    # デバッグ：URLマップを起動時に出力
-    print("=== URL MAP ===")
-    for rule in app.url_map.iter_rules():
-        print(f"{rule.rule} -> {rule.endpoint} [{', '.join(rule.methods)}]")
+    if os.environ.get("FLASK_DEBUG", "0") == "1":
+        print("=== URL MAP ===")
+        for rule in app.url_map.iter_rules():
+            print(f"{rule.rule} -> {rule.endpoint} [{', '.join(rule.methods)}]")
 
     return app

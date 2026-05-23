@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Button1 from "../components/button1";
 import Balance from "../components/Balance";
 import Icon from "../components/Icon";
+import { apiFetch } from "../lib/api";
 
 function PaymentRequest() {
     const { token } = useParams();
@@ -19,7 +20,7 @@ function PaymentRequest() {
     const getCurrentUserId = () => {
         const saved = sessionStorage.getItem("authUser");
         const user = saved ? JSON.parse(saved) : null;
-        return user?.user_id ?? 52; // なければデフォルト52を使用
+        return user?.user_id;
     };
 
     const currentUserId = getCurrentUserId();
@@ -28,11 +29,10 @@ function PaymentRequest() {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            let requestDataFetched = false;
 
             try {
                 // 請求情報を取得
-                const requestRes = await fetch(`http://localhost:5000/api/requests/${token}`);
+                const requestRes = await apiFetch(`/api/requests/${token}`);
 
                 if (!requestRes.ok) {
                     throw new Error(`請求情報の取得に失敗しました (ステータス: ${requestRes.status})`);
@@ -44,13 +44,11 @@ function PaymentRequest() {
                     throw new Error(`請求情報が見つかりません: ${requestData.message || "不明なエラー"}`);
                 }
 
-                // 請求情報の取得成功
                 setPaymentRequest(requestData.request);
-                requestDataFetched = true;
 
                 try {
                     // 残高を取得（請求情報とは別にtry-catchで囲む）
-                    const balanceRes = await fetch(`http://localhost:5000/api/accounts/${currentUserId}`);
+                    const balanceRes = await apiFetch(`/api/accounts/${currentUserId}`);
 
                     if (!balanceRes.ok) {
                         throw new Error(`残高情報の取得に失敗しました (ステータス: ${balanceRes.status})`);
@@ -96,7 +94,7 @@ function PaymentRequest() {
         setProcessing(true);
 
         try {
-            const res = await fetch(`http://localhost:5000/api/requests/${token}/pay`, {
+            const res = await apiFetch(`/api/requests/${token}/pay`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
