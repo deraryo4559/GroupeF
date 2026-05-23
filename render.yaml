@@ -2,6 +2,7 @@ services:
   - type: web
     name: groupef-api
     runtime: python
+    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: bash start.sh
