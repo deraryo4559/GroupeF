@@ -17,7 +17,7 @@ function AddressList() {
     console.log("認証ユーザー情報:", me);
     console.log("除外するユーザーID:", myId);
 
-    apiFetch(`/api/users?exclude_id=${myId}`)
+    apiFetch(`/api/users/?exclude_id=${myId}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('データの取得に失敗しました');
