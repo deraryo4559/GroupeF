@@ -1,6 +1,7 @@
 import sqlite3
 import random
 import os
+import sys
 from werkzeug.security import generate_password_hash
 
 # データベースファイルに接続します
@@ -8,6 +9,13 @@ connection = sqlite3.connect(os.environ.get("SQLITE_DB_PATH", "app/money_app.db"
 cursor = connection.cursor()
 
 try:
+    if "--if-empty" in sys.argv:
+        cursor.execute("SELECT COUNT(*) FROM users")
+        user_count = cursor.fetchone()[0]
+        if user_count > 0:
+            print("既存ユーザーが存在するため、シード投入をスキップしました。")
+            raise SystemExit(0)
+
     # --- 0. 既存のデータをすべて削除 ---
     cursor.execute('DELETE FROM transactions')
     cursor.execute('DELETE FROM payment_requests')
